@@ -4,7 +4,7 @@ import { useEffect } from "react";
 const mainColor = "#3A6351";
 const accentColor = "#4A90E2";
 const bgColor = "#F5F7FA";
-const travelFont = `'Gowun Batang', 'Nanum Pen Script', 'Arial Rounded MT Bold', 'Arial', sans-serif`;
+// const travelFont = `'Gowun Batang', 'Nanum Pen Script', 'Arial Rounded MT Bold', 'Arial', sans-serif`;
 
 const injectMainResponsiveStyle = () => {
   if (document.getElementById("mainpage-responsive-style")) return;
@@ -56,7 +56,7 @@ const MainPage = () => {
           fontSize: "2.3rem",
           marginBottom: 10,
           letterSpacing: "-1px",
-          fontFamily: travelFont,
+          // fontFamily: travelFont,
         }}
       >
         의성에서 어떤 여행을 즐기고 싶나요?
@@ -66,7 +66,7 @@ const MainPage = () => {
           color: "#888",
           fontSize: "1.1rem",
           marginBottom: 40,
-          fontFamily: travelFont,
+          // fontFamily: travelFont,
         }}
       >
         워케이션과 관광, 원하는 스타일을 선택해보세요.
@@ -104,7 +104,7 @@ const MainPage = () => {
             position: "relative",
             overflow: "hidden",
             userSelect: "none",
-            fontFamily: travelFont,
+            // fontFamily: travelFont,
           }}
           onMouseOver={(e) => {
             e.currentTarget.style.boxShadow = `0 12px 32px rgba(74,144,226,0.18)`;
@@ -143,7 +143,7 @@ const MainPage = () => {
             position: "relative",
             overflow: "hidden",
             userSelect: "none",
-            fontFamily: travelFont,
+            // fontFamily: travelFont,
           }}
           onMouseOver={(e) => {
             e.currentTarget.style.boxShadow = `0 12px 32px rgba(74,144,226,0.18)`;
@@ -166,7 +166,7 @@ const MainPage = () => {
           fontSize: "1.08rem",
           maxWidth: 500,
           textAlign: "center",
-          fontFamily: travelFont,
+          // fontFamily: travelFont,
         }}
       ></div>
     </div>
