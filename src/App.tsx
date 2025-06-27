@@ -15,6 +15,7 @@ function App() {
         <Route path="workation-survey" element={<WorkationSurveyPage />} />
         <Route path="tour-survey" element={<TourSurveyPage />} />
         <Route path="rental" element={<RentalPage />} />
+        <Route path="rental/:id" element={<RentalPage />} />
         <Route path="about" element={<AboutPage />} />
       </Route>
     </Routes>
