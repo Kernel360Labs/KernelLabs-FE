@@ -34,7 +34,7 @@ const TourSurveyPage = () => {
     setLoading(true);
     setError(null);
 
-    const apiUrl = `http://localhost:8080/vacations`;
+    const apiUrl = `http://34.53.50.247/vacations`;
 
     // companion과 budget이 빈 문자열일 경우 null로 변환
     const requestData = {
