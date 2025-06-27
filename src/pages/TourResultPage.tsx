@@ -41,7 +41,7 @@ const TourResultPage = () => {
           alignItems: "center",
           justifyContent: "center",
           padding: "2rem 1rem",
-          fontFamily: travelFont,
+          // fontFamily: travelFont,
         }}
       >
         <h1 style={{ color: mainColor, marginBottom: "1rem" }}>
@@ -76,7 +76,7 @@ const TourResultPage = () => {
         flexDirection: "column",
         alignItems: "center",
         padding: "3rem 1rem",
-        fontFamily: travelFont,
+        // fontFamily: travelFont,
       }}
     >
       <h1
