@@ -129,9 +129,17 @@ const WorkationSurveyPage = () => {
             <div style={{ flex: 1, display: "flex", justifyContent: "center" }}>
               <div style={{ background: "#fff", borderRadius: 16, boxShadow: "0 2px 12px #0001", padding: 40, minWidth: 340, maxWidth: 420, textAlign: "center", border: "2px solid #2196f3" }}>
                 {/* 이미지 자리 */}
-                <div style={{ width: 80, height: 80, background: "#f4f4f4", borderRadius: 12, margin: "0 auto 24px auto", display: "flex", alignItems: "center", justifyContent: "center", color: "#bbb", fontSize: 32 }}>
-                  <span role="img" aria-label="장소">📍</span>
-                </div>
+                {result.imgUrl ? (
+                  <img
+                    src={result.imgUrl}
+                    alt={result.name}
+                    style={{ width: 200, height: 200, objectFit: "cover", borderRadius: 20, margin: "0 auto 24px auto", display: "block" }}
+                  />
+                ) : (
+                  <div style={{ width: 200, height: 200, background: "#f4f4f4", borderRadius: 20, margin: "0 auto 24px auto", display: "flex", alignItems: "center", justifyContent: "center", color: "#bbb", fontSize: 64 }}>
+                    <span role="img" aria-label="장소">📍</span>
+                  </div>
+                )}
                 <div style={{ fontWeight: 700, fontSize: 26, marginBottom: 8 }}>{result.name}</div>
                 <div style={{ color: "#222", fontSize: 17, marginBottom: 18 }}>{result.description}</div>
                 <div style={{ color: "#2196f3", fontWeight: 500, fontSize: 16, marginBottom: 8 }}>유형: {result.type}</div>
