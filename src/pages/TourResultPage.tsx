@@ -22,7 +22,7 @@ interface RoutePlan {
 const mainColor = "#3A6351";
 const accentColor = "#4A90E2";
 const bgColor = "#F5F7FA";
-const travelFont = `'Gowun Batang', 'Nanum Pen Script', 'Arial Rounded MT Bold', 'Arial', sans-serif`;
+// const travelFont = `'Gowun Batang', 'Nanum Pen Script', 'Arial Rounded MT Bold', 'Arial', sans-serif`;
 
 const TourResultPage = () => {
   const location = useLocation();
