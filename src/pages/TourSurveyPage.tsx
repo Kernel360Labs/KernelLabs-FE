@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const mainColor = "#3A6351";
-const accentColor = "#4A90E2";
 const bgColor = "#F5F7FA";
 const travelFont = `'Gowun Batang', 'Nanum Pen Script', 'Arial Rounded MT Bold', 'Arial', sans-serif`;
 
@@ -143,7 +142,7 @@ const TourSurveyPage = () => {
               :
             </label>
             <input
-              type="text"
+              type={key === "startDate" ? "date" : "text"}
               id={key}
               name={key}
               value={formData[key as keyof typeof formData]}
@@ -180,7 +179,7 @@ const TourSurveyPage = () => {
             padding: "1rem 2rem",
             borderRadius: "10px",
             border: "none",
-            backgroundColor: accentColor,
+            backgroundColor: mainColor,
             color: "#fff",
             fontSize: "1.2rem",
             fontWeight: "bold",
@@ -194,6 +193,29 @@ const TourSurveyPage = () => {
           <p style={{ color: "red", marginTop: "1rem", textAlign: "center" }}>
             {error}
           </p>
+        )}
+        {loading && (
+          <div style={{
+            position: "fixed",
+            top: 0, left: 0, right: 0, bottom: 0,
+            background: "rgba(0,0,0,0.3)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 9999
+          }}>
+            <div style={{
+              background: "#fff",
+              padding: "3rem 5rem",
+              borderRadius: "32px",
+              boxShadow: "0 4px 32px rgba(0,0,0,0.15)",
+              fontSize: "2.5rem",
+              color: mainColor,
+              fontWeight: "bold"
+            }}>
+              경로 생성 중...
+            </div>
+          </div>
         )}
       </form>
     </div>
