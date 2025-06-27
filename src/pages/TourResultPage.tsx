@@ -1,10 +1,5 @@
-// TourResultPage.jsx
+// TourResultPage.jsxAdd commentMore actions
 import { useLocation, useNavigate } from "react-router-dom";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Pagination } from "swiper/modules";
-import "swiper/css";
-import "swiper/css/navigation";
-import "swiper/css/pagination";
 
 interface Place {
   name: string;
@@ -32,9 +27,10 @@ const travelFont = `'Gowun Batang', 'Nanum Pen Script', 'Arial Rounded MT Bold',
 const TourResultPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { routePlan } = (location.state as { routePlan: RoutePlan }) || {};
+  const { routePlan } = location.state as { routePlan: RoutePlan } || {};
 
   if (!routePlan || !routePlan.plan) {
+    // Handle cases where data is missing (e.g., direct access or refresh)
     return (
       <div
         style={{
@@ -62,6 +58,7 @@ const TourResultPage = () => {
             fontSize: "1.2rem",
             fontWeight: "bold",
             cursor: "pointer",
+            transition: "background-color 0.3s ease",
           }}
         >
           다시 추천받기
@@ -95,109 +92,103 @@ const TourResultPage = () => {
         <span style={{ color: accentColor }}>환상적인</span> 여정!
       </h1>
 
-      <div style={{ width: "100%", maxWidth: "900px" }}>
-        <Swiper
-          modules={[Navigation, Pagination]}
-          navigation
-          pagination={{ clickable: true }}
-          spaceBetween={30}
-          slidesPerView={1}
-          style={{ paddingBottom: "3rem" }}
-        >
-          {routePlan.plan.map((dayPlan) => (
-            <SwiperSlide key={dayPlan.day}>
-              <div
-                style={{
-                  backgroundColor: "#fff",
-                  borderRadius: "18px",
-                  boxShadow: "0 6px 24px rgba(0,0,0,0.08)",
-                  padding: "2.5rem",
-                  borderLeft: `8px solid ${mainColor}`,
-                  minHeight: "400px",
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
-                }}
-              >
-                <h2
-                  style={{
-                    color: mainColor,
-                    fontSize: "1.8rem",
-                    marginBottom: "1rem",
-                    fontWeight: "bold",
-                  }}
-                >
-                  Day {dayPlan.day}. {dayPlan.description}
-                </h2>
+      <div
+        style={{
+          width: "100%",
+          maxWidth: "900px",
+          display: "flex",
+          flexDirection: "column",
+          gap: "2.5rem",
+        }}
+      >
+        {routePlan.plan.map((dayPlan) => (
+          <div
+            key={dayPlan.day}
+            style={{
+              backgroundColor: "#fff",
+              borderRadius: "18px",
+              boxShadow: "0 6px 24px rgba(0,0,0,0.08)",
+              padding: "2.5rem",
+              borderLeft: `8px solid ${mainColor}`,
+            }}
+          >
+            <h2
+              style={{
+                color: mainColor,
+                fontSize: "1.8rem",
+                marginBottom: "1rem",
+                fontWeight: "bold",
+              }}
+            >
+              Day {dayPlan.day}. {dayPlan.description}
+            </h2>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "1.8rem",
+              }}
+            >
+              {dayPlan.places.map((place, index) => (
                 <div
+                  key={index}
                   style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "1.8rem",
+                    padding: "1.2rem",
+                    borderRadius: "12px",
+                    backgroundColor: bgColor,
+                    border: `1px solid ${mainColor}20`,
                   }}
                 >
-                  {dayPlan.places.map((place, index) => (
-                    <div
-                      key={index}
-                      style={{
-                        padding: "1.2rem",
-                        borderRadius: "12px",
-                        backgroundColor: bgColor,
-                        border: `1px solid ${mainColor}20`,
-                      }}
-                    >
-                      <h3
-                        style={{
-                          color: accentColor,
-                          fontSize: "1.4rem",
-                          marginBottom: "0.5rem",
-                          fontWeight: "bold",
-                        }}
-                      >
-                        {place.name}
-                      </h3>
-                      <p
-                        style={{
-                          color: "#666",
-                          marginBottom: "0.3rem",
-                          fontSize: "0.95rem",
-                        }}
-                      >
-                        주소: {place.address}
-                      </p>
-                      <p
-                        style={{
-                          color: "#555",
-                          marginBottom: "0.3rem",
-                          lineHeight: "1.5",
-                        }}
-                      >
-                        활동: {place.activity}
-                      </p>
-                      <p
-                        style={{
-                          color: "#666",
-                          marginBottom: "0.3rem",
-                          fontSize: "0.95rem",
-                        }}
-                      >
-                        예상 비용: {place.estimated_cost}
-                      </p>
-                      <p
-                        style={{
-                          color: "#666",
-                          fontSize: "0.95rem",
-                        }}
-                      >
-                        예상 시간: {place.estimated_time}
-                      </p>
-                    </div>
-                  ))}
+                  <h3
+                    style={{
+                      color: accentColor,
+                      fontSize: "1.4rem",
+                      marginBottom: "0.5rem",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    {place.name}
+                  </h3>
+                  <p
+                    style={{
+                      color: "#666",
+                      marginBottom: "0.3rem",
+                      fontSize: "0.95rem",
+                    }}
+                  >
+                    주소: {place.address}
+                  </p>
+                  <p
+                    style={{
+                      color: "#555",
+                      marginBottom: "0.3rem",
+                      lineHeight: "1.5",
+                    }}
+                  >
+                    활동: {place.activity}
+                  </p>
+                  <p
+                    style={{
+                      color: "#666",
+                      marginBottom: "0.3rem",
+                      fontSize: "0.95rem",
+                    }}
+                  >
+                    예상 비용: {place.estimated_cost}
+                  </p>
+                  <p
+                    style={{
+                      color: "#666",
+                      fontSize: "0.95rem",
+                    }}
+                  >
+                    예상 관광 시간: {place.estimated_time}
+                  </p>
                 </div>
-              </div>
-            </SwiperSlide>
-          ))}
-        </Swiper>
+              ))}
+            </div>
+          </div>
+        ))}
       </div>
 
       <button
@@ -212,30 +203,12 @@ const TourResultPage = () => {
           fontSize: "1.3rem",
           fontWeight: "bold",
           cursor: "pointer",
+          transition: "background-color 0.3s ease",
           boxShadow: "0 4px 15px rgba(0,0,0,0.1)",
         }}
       >
         새로운 경로 추천받기
       </button>
-
-      <style>
-        {`
-          .swiper-button-prev,
-          .swiper-button-next {
-            color: ${mainColor};
-            width: 40px;
-            height: 40px;
-          }
-
-          @media (max-width: 768px) {
-            .swiper-button-prev,
-            .swiper-button-next {
-              width: 30px;
-              height: 30px;
-            }
-          }
-        `}
-      </style>
     </div>
   );
 };
