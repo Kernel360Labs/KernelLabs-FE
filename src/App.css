@@ -1,3 +1,87 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Custom react-calendar styles for modern deep green theme */
+.react-calendar {
+  width: 100%;
+  max-width: 400px;
+  background: #fff;
+  border: none;
+  border-radius: 18px;
+  box-shadow: 0 4px 24px rgba(34, 84, 61, 0.1);
+  font-family: "Pretendard", "Noto Sans KR", sans-serif;
+  padding: 18px 10px 10px 10px;
+}
+
+.react-calendar__navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.react-calendar__navigation button {
+  color: #22543d;
+  min-width: 36px;
+  background: none;
+  font-size: 1.2rem;
+  font-weight: 700;
+  border: none;
+  border-radius: 8px;
+  transition: background 0.2s;
+  padding: 6px 0;
+}
+
+.react-calendar__navigation button:enabled:hover,
+.react-calendar__navigation button:enabled:focus {
+  background: #e6f4ea;
+}
+
+.react-calendar__month-view__weekdays {
+  text-align: center;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: #22543d;
+  font-size: 0.95rem;
+  margin-bottom: 4px;
+}
+
+.react-calendar__tile {
+  background: none;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  color: #333;
+  padding: 8px 0;
+  transition: background 0.2s, color 0.2s;
+}
+
+.react-calendar__tile:enabled:hover,
+.react-calendar__tile:enabled:focus {
+  background: #e6f4ea;
+  color: #22543d;
+}
+
+.react-calendar__tile--active {
+  background: linear-gradient(90deg, #22543d 60%, #3a6351 100%);
+  color: #fff;
+  font-weight: 700;
+}
+
+.react-calendar__tile--now {
+  background: #e6f4ea;
+  color: #22543d;
+  border: 1.5px solid #22543d;
+}
+
+.react-calendar__tile--range {
+  background: #e6f4ea;
+  color: #22543d;
+}
+
+.react-calendar__tile--rangeStart,
+.react-calendar__tile--rangeEnd {
+  background: #22543d;
+  color: #fff;
+}
