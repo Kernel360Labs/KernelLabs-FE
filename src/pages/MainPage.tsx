@@ -1,12 +1,41 @@
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 const mainColor = "#3A6351";
 const accentColor = "#4A90E2";
 const bgColor = "#F5F7FA";
 const travelFont = `'Gowun Batang', 'Nanum Pen Script', 'Arial Rounded MT Bold', 'Arial', sans-serif`;
 
+const injectMainResponsiveStyle = () => {
+  if (document.getElementById("mainpage-responsive-style")) return;
+  const style = document.createElement("style");
+  style.id = "mainpage-responsive-style";
+  style.innerHTML = `
+    @media (max-width: 700px) {
+      .main-cards {
+        flex-direction: column !important;
+        gap: 20px !important;
+      }
+      .main-card {
+        min-width: 90vw !important;
+        max-width: 98vw !important;
+        min-height: 140px !important;
+        font-size: 1.1rem !important;
+        padding: 1.2rem 0.5rem !important;
+      }
+      .main-title {
+        font-size: 1.3rem !important;
+      }
+    }
+  `;
+  document.head.appendChild(style);
+};
+
 const MainPage = () => {
   const navigate = useNavigate();
+  useEffect(() => {
+    injectMainResponsiveStyle();
+  }, []);
   return (
     <div
       style={{
@@ -20,6 +49,7 @@ const MainPage = () => {
       }}
     >
       <h1
+        className="main-title"
         style={{
           color: mainColor,
           fontWeight: 800,
@@ -42,6 +72,7 @@ const MainPage = () => {
         워케이션과 관광, 원하는 스타일을 선택해보세요.
       </p>
       <div
+        className="main-cards"
         style={{
           display: "flex",
           gap: 48,
@@ -50,6 +81,7 @@ const MainPage = () => {
         }}
       >
         <div
+          className="main-card"
           onClick={() => navigate("/workation-survey")}
           style={{
             background: `linear-gradient(rgba(58,99,81,0.38), rgba(58,99,81,0.38)), url('/image/workation.png') center/cover no-repeat`,
@@ -88,6 +120,7 @@ const MainPage = () => {
           워케이션
         </div>
         <div
+          className="main-card"
           onClick={() => navigate("/tour-survey")}
           style={{
             background: `linear-gradient(rgba(58,99,81,0.38), rgba(58,99,81,0.38)), url('/image/vacation.jpg') center/cover no-repeat`,
