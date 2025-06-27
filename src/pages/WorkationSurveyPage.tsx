@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { WORK_RECOMMEND_URL } from "../api";
 
 const questions = [
   {
@@ -78,7 +79,7 @@ const WorkationSurveyPage = () => {
       setError(null);
       setResult(null);
       try {
-        const res = await fetch("http://34.53.50.247/api/work/recommend", {
+        const res = await fetch(WORK_RECOMMEND_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(newAnswers),

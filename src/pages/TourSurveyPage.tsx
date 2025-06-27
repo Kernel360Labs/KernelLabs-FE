@@ -1,6 +1,7 @@
 // TourSurveyPage.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { TOUR_RECOMMEND_URL } from "../api";
 
 const mainColor = "#3A6351";
 const bgColor = "#F5F7FA";
@@ -34,7 +35,8 @@ const TourSurveyPage = () => {
     setLoading(true);
     setError(null);
 
-    const apiUrl = `http://34.53.50.247/vacations`;
+    // const apiUrl = `http://34.53.50.247/vacations`;
+    const apiUrl = TOUR_RECOMMEND_URL;
 
     // companion과 budget이 빈 문자열일 경우 null로 변환
     const requestData = {
