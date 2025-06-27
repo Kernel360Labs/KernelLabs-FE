@@ -39,11 +39,11 @@ const timeSlots = [
 
 function RentalDetail({ place }: { place: (typeof dummyPlaces)[0] }) {
   const [date, setDate] = useState(new Date());
-  const [selectedTime, setSelectedTime] = useState<string | null>(null);
+  const [selectedTime, setSelectedTime] = useState<string[]>([]);
   const [reserved, setReserved] = useState(false);
 
   const handleReserve = () => {
-    if (!selectedTime) return;
+    if (!selectedTime.length) return;
     setReserved(true);
     alert("예약이 완료되었습니다! (메일 전송은 추후 구현)");
   };
@@ -77,13 +77,13 @@ function RentalDetail({ place }: { place: (typeof dummyPlaces)[0] }) {
         />
         <button
           onClick={handleReserve}
-          disabled={!selectedTime}
+          disabled={!selectedTime.length}
           style={{
             marginTop: 18,
             padding: "0.9rem 2.2rem",
             borderRadius: 10,
             border: "none",
-            background: selectedTime
+            background: selectedTime.length
               ? reserved
                 ? "#aaa"
                 : "#3A6351"
@@ -91,11 +91,12 @@ function RentalDetail({ place }: { place: (typeof dummyPlaces)[0] }) {
             color: "#fff",
             fontWeight: 700,
             fontSize: "1.15rem",
-            cursor: selectedTime && !reserved ? "pointer" : "not-allowed",
+            cursor:
+              selectedTime.length && !reserved ? "pointer" : "not-allowed",
             transition: "background 0.2s",
           }}
         >
-          {reserved ? "예약 완료" : selectedTime ? "예약 완료" : "예약"}
+          {reserved ? "예약 완료" : selectedTime.length ? "예약 완료" : "예약"}
         </button>
       </div>
     </div>
