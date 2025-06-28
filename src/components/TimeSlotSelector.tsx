@@ -8,14 +8,39 @@ const TimeSlotSelector = ({
   selectedTime,
   onSelect,
   maxSelect = 3,
+  selectedDate,
 }: {
   slots: Slot[];
   selectedTime: string[];
   onSelect: (slots: string[]) => void;
   maxSelect?: number;
+  selectedDate?: Date;
 }) => {
   const handleClick = (slot: string, status: string) => {
     if (status === "UNAVAILABLE") return;
+
+    // 오늘 날짜인 경우에만 현재 시간 체크
+    if (selectedDate) {
+      const today = new Date();
+      const isToday = selectedDate.toDateString() === today.toDateString();
+
+      if (isToday) {
+        const now = new Date();
+        const currentHour = now.getHours();
+        const currentMinute = now.getMinutes();
+        const slotHour = parseInt(slot.split(":")[0]);
+        const slotMinute = parseInt(slot.split(":")[1]);
+
+        // 현재 시간보다 이전인 경우 클릭 불가
+        if (
+          slotHour < currentHour ||
+          (slotHour === currentHour && slotMinute <= currentMinute)
+        ) {
+          return;
+        }
+      }
+    }
+
     const idx = selectedTime.indexOf(slot);
     let next: string[];
     if (idx > -1) {
@@ -38,6 +63,24 @@ const TimeSlotSelector = ({
     const isSelected = selectedTime.includes(slot.time);
     const isMyReservation = slot.status === "MY_RESERVATION";
 
+    // 오늘 날짜인 경우에만 현재 시간 체크
+    let isPastTime = false;
+    if (selectedDate) {
+      const today = new Date();
+      const isToday = selectedDate.toDateString() === today.toDateString();
+
+      if (isToday) {
+        const now = new Date();
+        const currentHour = now.getHours();
+        const currentMinute = now.getMinutes();
+        const slotHour = parseInt(slot.time.split(":")[0]);
+        const slotMinute = parseInt(slot.time.split(":")[1]);
+        isPastTime =
+          slotHour < currentHour ||
+          (slotHour === currentHour && slotMinute <= currentMinute);
+      }
+    }
+
     if (isSelected) {
       return {
         padding: "0.55rem 0.9rem",
@@ -55,7 +98,7 @@ const TimeSlotSelector = ({
       };
     }
 
-    if (slot.status === "UNAVAILABLE") {
+    if (slot.status === "UNAVAILABLE" || isPastTime) {
       return {
         padding: "0.55rem 0.9rem",
         borderRadius: 8,
@@ -115,26 +158,50 @@ const TimeSlotSelector = ({
         justifyContent: "center",
       }}
     >
-      {slots.map((slot) => (
-        <button
-          key={slot.time}
-          onClick={() => handleClick(slot.time, slot.status)}
-          disabled={slot.status === "UNAVAILABLE"}
-          style={getSlotStyle(slot)}
-          title={
-            slot.status === "MY_RESERVATION"
-              ? "내 예약"
-              : slot.status === "UNAVAILABLE"
-              ? "다른 사람 예약"
-              : "예약 가능"
+      {slots.map((slot) => {
+        // 오늘 날짜인 경우에만 현재 시간 체크
+        let isPastTime = false;
+        if (selectedDate) {
+          const today = new Date();
+          const isToday = selectedDate.toDateString() === today.toDateString();
+
+          if (isToday) {
+            const now = new Date();
+            const currentHour = now.getHours();
+            const currentMinute = now.getMinutes();
+            const slotHour = parseInt(slot.time.split(":")[0]);
+            const slotMinute = parseInt(slot.time.split(":")[1]);
+            isPastTime =
+              slotHour < currentHour ||
+              (slotHour === currentHour && slotMinute <= currentMinute);
           }
-        >
-          {slot.time}
-          {slot.status === "MY_RESERVATION" && (
-            <span style={{ fontSize: "0.8em", marginLeft: 4 }}>✓</span>
-          )}
-        </button>
-      ))}
+        }
+
+        const isDisabled = slot.status === "UNAVAILABLE" || isPastTime;
+
+        return (
+          <button
+            key={slot.time}
+            onClick={() => handleClick(slot.time, slot.status)}
+            disabled={isDisabled}
+            style={getSlotStyle(slot)}
+            title={
+              isPastTime
+                ? "지난 시간"
+                : slot.status === "MY_RESERVATION"
+                ? "내 예약"
+                : slot.status === "UNAVAILABLE"
+                ? "다른 사람 예약"
+                : "예약 가능"
+            }
+          >
+            {slot.time}
+            {slot.status === "MY_RESERVATION" && (
+              <span style={{ fontSize: "0.8em", marginLeft: 4 }}>✓</span>
+            )}
+          </button>
+        );
+      })}
     </div>
   );
 };

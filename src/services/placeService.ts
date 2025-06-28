@@ -9,10 +9,27 @@ import type {
 
 // available 필드를 status로 변환하는 함수
 const transformTimeSlots = (timeSlots: any[]) => {
-  return timeSlots.map((slot) => ({
-    time: slot.time,
-    status: slot.available ? "AVAILABLE" : "UNAVAILABLE",
-  }));
+  return timeSlots.map((slot) => {
+    // status 필드가 이미 있는 경우 그대로 사용
+    if (slot.status) {
+      return {
+        time: slot.time,
+        status: slot.status,
+      };
+    }
+    // available 필드가 있는 경우 변환
+    if (slot.hasOwnProperty("available")) {
+      return {
+        time: slot.time,
+        status: slot.available ? "AVAILABLE" : "UNAVAILABLE",
+      };
+    }
+    // 기본값
+    return {
+      time: slot.time,
+      status: "AVAILABLE",
+    };
+  });
 };
 
 export const placeService = {
@@ -50,9 +67,9 @@ export const placeService = {
     reservationId: string,
     password: string
   ): Promise<ReservationResponse> => {
-    const response = await axios.get<ReservationResponse>(
+    const response = await axios.post<ReservationResponse>(
       `${API_BASE_URL}/reservations/${reservationId}`,
-      { data: { password } }
+      { password }
     );
     return response.data;
   },

@@ -247,6 +247,7 @@ const RentalDetailPage = () => {
                 selectedTime={selectedTime}
                 onSelect={setSelectedTime}
                 maxSelect={3}
+                selectedDate={date}
               />
             </div>
           )}
