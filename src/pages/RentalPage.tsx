@@ -1,7 +1,7 @@
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import RentalPlaceList from "../components/RentalPlaceList";
 import { usePlaces } from "../hooks/usePlaces";
-import { useState } from "react";
 
 const RentalPage = () => {
   const navigate = useNavigate();
@@ -12,6 +12,22 @@ const RentalPage = () => {
   const pageSize = 6;
   const totalPages = Math.ceil(places.length / pageSize);
   const pagedPlaces = places.slice((page - 1) * pageSize, page * pageSize);
+
+  // 반응형 minHeight 계산
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // 카드 높이 고정: 한 줄 3개, 두 줄(6개) 기준으로 minHeight 설정 (카드 높이+gap 고려)
+  const cardHeight = 270; // 카드+패딩+마진 대략값(px)
+  const gridGap = 32; // gap 값
+  let minHeight = cardHeight * 2 + gridGap; // 기본 2줄(6개)
+  if (windowWidth < 800) {
+    minHeight = cardHeight + gridGap; // 1줄(3개)
+  }
 
   if (loading) {
     return (
@@ -48,11 +64,6 @@ const RentalPage = () => {
       </div>
     );
   }
-
-  // 카드 높이 고정: 한 줄 3개, 두 줄(6개) 기준으로 minHeight 설정 (카드 높이+gap 고려)
-  const cardHeight = 270; // 카드+패딩+마진 대략값(px)
-  const gridGap = 32; // gap 값
-  const minHeight = cardHeight * 2 + gridGap; // 2줄 기준
 
   return (
     <div
