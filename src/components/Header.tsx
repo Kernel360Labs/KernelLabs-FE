@@ -98,6 +98,21 @@ const Header = () => {
               marginRight: 8,
               transition: "color 0.2s",
             }}
+            onClick={() => navigate("/travel-planner")}
+            onMouseOver={(e) => (e.currentTarget.style.color = accentColor)}
+            onMouseOut={(e) => (e.currentTarget.style.color = mainColor)}
+          >
+            AI 의성 여행 플래너
+          </span>
+          <span
+            style={{
+              color: mainColor,
+              fontWeight: 600,
+              fontSize: "1.1rem",
+              cursor: "pointer",
+              marginRight: 8,
+              transition: "color 0.2s",
+            }}
             onClick={() => navigate("/about")}
             onMouseOver={(e) => (e.currentTarget.style.color = accentColor)}
             onMouseOut={(e) => (e.currentTarget.style.color = mainColor)}
