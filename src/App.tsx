@@ -9,6 +9,7 @@ import RentalPage from "./pages/RentalPage";
 import RentalDetailPage from "./pages/RentalDetailPage";
 import MainLayout from "./components/MainLayout";
 import AboutPage from "./pages/AboutPage";
+import ReservationCheckPage from "./pages/ReservationCheckPage";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
         <Route path="rental" element={<RentalPage />} />
         <Route path="rental/:id" element={<RentalDetailPage />} />
         <Route path="about" element={<AboutPage />} />
+        <Route path="reservation-check" element={<ReservationCheckPage />} />
       </Route>
     </Routes>
   );

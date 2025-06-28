@@ -29,3 +29,24 @@ export interface PlaceDetailResponse {
   message: string;
   data: PlaceDetail;
 }
+
+export interface ReservationRequest {
+  placeId: number;
+  password: string;
+  reservationDate: string;
+  timeSlots: string[];
+}
+
+export interface ReservationResponse {
+  status: string;
+  code: string;
+  message: string;
+  data: {
+    reservationId: number;
+    placeId: number;
+    placeName: string;
+    reservationDate: string;
+    startTime: string;
+    endTime: string;
+  };
+}

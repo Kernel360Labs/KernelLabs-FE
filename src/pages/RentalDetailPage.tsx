@@ -3,6 +3,8 @@ import { useState, useMemo } from "react";
 import { usePlaceDetail } from "../hooks/usePlaces";
 import RentalMapPlaceholder from "../components/RentalMapPlaceholder";
 import RentalCalendar from "../components/RentalCalendar";
+import { useReservationStore } from "../stores/placeStore";
+import { placeService } from "../services/placeService";
 
 function getHourSlots(open: string, close: string) {
   // open, close: "10:00:00" ~ "21:00:00"
@@ -22,6 +24,17 @@ const RentalDetailPage = () => {
   const [date, setDate] = useState(new Date());
   const [selectedTime, setSelectedTime] = useState<string[]>([]);
   const [reserved, setReserved] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [password, setPassword] = useState("");
+  const {
+    reserving,
+    reservationError,
+    reservationResult,
+    setReserving,
+    setReservationError,
+    setReservationResult,
+    resetReservation,
+  } = useReservationStore();
 
   // 시간 슬롯 계산
   const timeSlots = useMemo(() => {
@@ -98,10 +111,42 @@ const RentalDetailPage = () => {
     );
   }
 
+  // 예약 API 호출
+  const handleReserveRequest = async () => {
+    if (!place || !selectedTime.length || password.length !== 4) return;
+    setReserving(true);
+    setReservationError(null);
+    try {
+      const res = await placeService.reserve({
+        placeId: place.id,
+        password,
+        reservationDate: date.toISOString().slice(0, 10),
+        timeSlots: selectedTime.sort(),
+      });
+      setReservationResult(res);
+      setShowModal(false);
+      setPassword("");
+      setSelectedTime([]);
+    } catch (e: any) {
+      setReservationError(
+        e?.response?.data?.message || e.message || "예약에 실패했습니다."
+      );
+    } finally {
+      setReserving(false);
+    }
+  };
+
+  // 예약 버튼 클릭 시 모달 오픈
   const handleReserve = () => {
-    if (!selectedTime.length) return;
-    setReserved(true);
-    alert("예약이 완료되었습니다! (메일 전송은 추후 구현)");
+    setShowModal(true);
+    resetReservation();
+  };
+
+  // 모달 닫기
+  const closeModal = () => {
+    setShowModal(false);
+    setPassword("");
+    resetReservation();
   };
 
   return (
@@ -350,19 +395,187 @@ const RentalDetailPage = () => {
               color: "#fff",
               fontWeight: 700,
               fontSize: "1.18rem",
-              cursor:
-                selectedTime.length && !reserved ? "pointer" : "not-allowed",
+              cursor: selectedTime.length ? "pointer" : "not-allowed",
               transition: "background 0.2s",
               boxShadow: "0 2px 8px rgba(58,99,81,0.08)",
             }}
           >
-            {reserved
-              ? "예약 완료"
-              : selectedTime.length
-              ? "예약 완료"
-              : "예약"}
+            예약
           </button>
         </div>
+        {/* 예약 모달 */}
+        {showModal && (
+          <div
+            style={{
+              position: "fixed",
+              left: 0,
+              top: 0,
+              width: "100vw",
+              height: "100vh",
+              background: "rgba(0,0,0,0.25)",
+              zIndex: 1000,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <div
+              style={{
+                background: "#fff",
+                borderRadius: 16,
+                padding: 32,
+                minWidth: 320,
+                boxShadow: "0 4px 24px rgba(0,0,0,0.13)",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+              }}
+            >
+              <h3
+                style={{
+                  fontWeight: 700,
+                  fontSize: "1.2rem",
+                  marginBottom: 18,
+                }}
+              >
+                예약 비밀번호 입력
+              </h3>
+              <input
+                type="password"
+                inputMode="numeric"
+                maxLength={4}
+                pattern="[0-9]*"
+                value={password}
+                onChange={(e) => {
+                  if (/^\d{0,4}$/.test(e.target.value))
+                    setPassword(e.target.value);
+                }}
+                style={{
+                  fontSize: "1.3rem",
+                  padding: "0.7rem 1.2rem",
+                  borderRadius: 8,
+                  border: "1.5px solid #3A6351",
+                  marginBottom: 18,
+                  width: 160,
+                  textAlign: "center",
+                  letterSpacing: "0.3em",
+                }}
+                placeholder="4자리 숫자"
+              />
+              {reservationError && (
+                <div style={{ color: "#e74c3c", marginBottom: 10 }}>
+                  {reservationError}
+                </div>
+              )}
+              <div style={{ display: "flex", gap: 12 }}>
+                <button
+                  onClick={closeModal}
+                  style={{
+                    padding: "0.7rem 1.5rem",
+                    borderRadius: 8,
+                    border: "none",
+                    background: "#eee",
+                    color: "#333",
+                    fontWeight: 600,
+                    fontSize: "1.05rem",
+                    cursor: "pointer",
+                  }}
+                >
+                  취소
+                </button>
+                <button
+                  onClick={handleReserveRequest}
+                  disabled={password.length !== 4 || reserving}
+                  style={{
+                    padding: "0.7rem 1.5rem",
+                    borderRadius: 8,
+                    border: "none",
+                    background:
+                      password.length === 4 && !reserving
+                        ? "#3A6351"
+                        : "#e0e0e0",
+                    color: "#fff",
+                    fontWeight: 700,
+                    fontSize: "1.05rem",
+                    cursor:
+                      password.length === 4 && !reserving
+                        ? "pointer"
+                        : "not-allowed",
+                  }}
+                >
+                  {reserving ? "예약 중..." : "예약 완료"}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+        {/* 예약 성공 안내 모달 */}
+        {reservationResult && (
+          <div
+            style={{
+              position: "fixed",
+              left: 0,
+              top: 0,
+              width: "100vw",
+              height: "100vh",
+              background: "rgba(0,0,0,0.25)",
+              zIndex: 1000,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <div
+              style={{
+                background: "#fff",
+                borderRadius: 16,
+                padding: 32,
+                minWidth: 320,
+                boxShadow: "0 4px 24px rgba(0,0,0,0.13)",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+              }}
+            >
+              <h3
+                style={{
+                  fontWeight: 700,
+                  fontSize: "1.2rem",
+                  marginBottom: 18,
+                }}
+              >
+                예약이 완료되었습니다.
+              </h3>
+              <div
+                style={{
+                  color: "#3A6351",
+                  fontWeight: 600,
+                  fontSize: "1.08rem",
+                  marginBottom: 18,
+                }}
+              >
+                [예약 확인] 페이지에서 확인해주세요
+              </div>
+              <button
+                onClick={() => {
+                  resetReservation();
+                }}
+                style={{
+                  padding: "0.7rem 1.5rem",
+                  borderRadius: 8,
+                  border: "none",
+                  background: "#3A6351",
+                  color: "#fff",
+                  fontWeight: 700,
+                  fontSize: "1.05rem",
+                  cursor: "pointer",
+                }}
+              >
+                닫기
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
