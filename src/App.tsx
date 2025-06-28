@@ -10,6 +10,7 @@ import RentalPage from "./pages/RentalPage";
 import MainLayout from "./components/MainLayout";
 import AboutPage from "./pages/AboutPage";
 import ReservationCheckPage from "./pages/ReservationCheckPage";
+import MetaversePage from "./pages/MetaversePage";
 import Chatbot from "./components/Chatbot";
 
 function App() {
@@ -27,6 +28,7 @@ function App() {
           <Route path="about" element={<AboutPage />} />
           <Route path="reservation-check" element={<ReservationCheckPage />} />
         </Route>
+        <Route path="/metaverse" element={<MetaversePage />} />
       </Routes>
       <Chatbot />
     </>
