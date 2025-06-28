@@ -40,4 +40,12 @@ export const placeService = {
     );
     return response.data;
   },
+  deleteReservation: async (
+    reservationId: string,
+    password: string
+  ): Promise<void> => {
+    await axios.delete(`${API_BASE_URL}/reservations/${reservationId}`, {
+      data: { password },
+    });
+  },
 };

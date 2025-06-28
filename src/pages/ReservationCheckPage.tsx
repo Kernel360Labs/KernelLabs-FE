@@ -1,10 +1,17 @@
 import { useState } from "react";
 import { placeService } from "../services/placeService";
 import { useReservationStore } from "../stores/placeStore";
+import DeleteReservationModal from "../components/DeleteReservationModal";
+import DeleteSuccessModal from "../components/DeleteSuccessModal";
 
 const ReservationCheckPage = () => {
   const [reservationId, setReservationId] = useState("");
   const [password, setPassword] = useState("");
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [deletePassword, setDeletePassword] = useState("");
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
   const {
     reserving: loading,
     reservationError: error,
@@ -30,6 +37,50 @@ const ReservationCheckPage = () => {
     } finally {
       setReserving(false);
     }
+  };
+
+  const handleDeleteReservation = async () => {
+    if (!result?.data.reservationId || deletePassword.length !== 4) return;
+
+    setDeleteLoading(true);
+    setDeleteError(null);
+
+    try {
+      await placeService.deleteReservation(
+        String(result.data.reservationId),
+        deletePassword
+      );
+
+      // 삭제 성공 시 모달 닫고 결과 초기화
+      setShowDeleteModal(false);
+      setDeletePassword("");
+      setReservationResult(null);
+      setReservationId("");
+      setPassword("");
+      setShowSuccessModal(true);
+    } catch (e: any) {
+      setDeleteError(
+        e?.response?.data?.message || e.message || "예약 취소에 실패했습니다."
+      );
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
+
+  const openDeleteModal = () => {
+    setShowDeleteModal(true);
+    setDeletePassword("");
+    setDeleteError(null);
+  };
+
+  const closeDeleteModal = () => {
+    setShowDeleteModal(false);
+    setDeletePassword("");
+    setDeleteError(null);
+  };
+
+  const closeSuccessModal = () => {
+    setShowSuccessModal(false);
   };
 
   return (
@@ -296,12 +347,7 @@ const ReservationCheckPage = () => {
               수정
             </button>
             <button
-              onClick={() => {
-                if (window.confirm("정말로 이 예약을 취소하시겠습니까?")) {
-                  // TODO: 예약 삭제 로직 구현
-                  alert("예약 취소 기능은 준비 중입니다.");
-                }
-              }}
+              onClick={openDeleteModal}
               style={{
                 padding: "0.7rem 1.2rem",
                 borderRadius: 8,
@@ -327,6 +373,23 @@ const ReservationCheckPage = () => {
             </button>
           </div>
         </div>
+      )}
+      {showDeleteModal && (
+        <DeleteReservationModal
+          isOpen={showDeleteModal}
+          onClose={closeDeleteModal}
+          onConfirm={handleDeleteReservation}
+          loading={deleteLoading}
+          error={deleteError}
+          password={deletePassword}
+          onPasswordChange={setDeletePassword}
+        />
+      )}
+      {showSuccessModal && (
+        <DeleteSuccessModal
+          isOpen={showSuccessModal}
+          onClose={closeSuccessModal}
+        />
       )}
     </div>
   );
