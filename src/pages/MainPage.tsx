@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
+import CoverflowCarousel from "../components/CoverflowCarousel";
 
 const mainColor = "#3A6351";
 const accentColor = "#4A90E2";
@@ -48,6 +49,16 @@ const MainPage = () => {
         padding: "0 1rem",
       }}
     >
+      <div style={{ textAlign: "center", marginBottom: 24, marginTop: 24 }}>
+        <div style={{ fontWeight: 800, fontSize: "2.3rem", color: mainColor, marginBottom: 10 }}>
+          자연과 함께하는 힐링 여행
+        </div>
+        <div style={{ color: "#666", fontSize: "1.15rem", marginBottom: 4 }}>
+          자연과의 만남에서 시작된 아름다운 스토리 의성 워케이션<br />
+          지금 바로 워케이션 장소와 여행일정을 추천받아보세요
+        </div>
+      </div>
+      <CoverflowCarousel />
       <h1
         className="main-title"
         style={{
