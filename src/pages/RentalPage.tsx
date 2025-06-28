@@ -1,10 +1,17 @@
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import RentalPlaceList from "../components/RentalPlaceList";
 import { usePlaces } from "../hooks/usePlaces";
+import { useState } from "react";
 
 const RentalPage = () => {
   const navigate = useNavigate();
   const { places, loading, error, refetch } = usePlaces();
+
+  // 페이지네이션 상태
+  const [page, setPage] = useState(1);
+  const pageSize = 6;
+  const totalPages = Math.ceil(places.length / pageSize);
+  const pagedPlaces = places.slice((page - 1) * pageSize, page * pageSize);
 
   if (loading) {
     return (
@@ -42,6 +49,11 @@ const RentalPage = () => {
     );
   }
 
+  // 카드 높이 고정: 한 줄 3개, 두 줄(6개) 기준으로 minHeight 설정 (카드 높이+gap 고려)
+  const cardHeight = 270; // 카드+패딩+마진 대략값(px)
+  const gridGap = 32; // gap 값
+  const minHeight = cardHeight * 2 + gridGap; // 2줄 기준
+
   return (
     <div
       style={{
@@ -69,10 +81,75 @@ const RentalPage = () => {
         </div>
       </div>
       <div style={{ maxWidth: 900, width: "100%", margin: "0 auto" }}>
-        <RentalPlaceList
-          places={places}
-          onSelect={(id) => navigate(`/rental/${id}`)}
-        />
+        <div style={{ minHeight, width: "100%" }}>
+          <RentalPlaceList
+            places={pagedPlaces}
+            onSelect={(id) => navigate(`/rental/${id}`)}
+          />
+        </div>
+        {/* 페이지네이션 UI */}
+        {totalPages > 1 && (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              gap: 12,
+              marginTop: 32,
+            }}
+          >
+            <button
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page === 1}
+              style={{
+                background: "none",
+                border: "none",
+                color: "#3A6351",
+                fontWeight: 700,
+                fontSize: "1.2rem",
+                cursor: page === 1 ? "not-allowed" : "pointer",
+                opacity: page === 1 ? 0.5 : 1,
+              }}
+            >
+              &lt;
+            </button>
+            {Array.from({ length: totalPages }, (_, i) => (
+              <button
+                key={i + 1}
+                onClick={() => setPage(i + 1)}
+                style={{
+                  background: page === i + 1 ? "#3A6351" : "none",
+                  color: page === i + 1 ? "#fff" : "#3A6351",
+                  border: "none",
+                  borderRadius: 6,
+                  fontWeight: 700,
+                  fontSize: "1.1rem",
+                  width: 32,
+                  height: 32,
+                  cursor: "pointer",
+                  margin: "0 2px",
+                  transition: "background 0.2s",
+                }}
+              >
+                {i + 1}
+              </button>
+            ))}
+            <button
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={page === totalPages}
+              style={{
+                background: "none",
+                border: "none",
+                color: "#3A6351",
+                fontWeight: 700,
+                fontSize: "1.2rem",
+                cursor: page === totalPages ? "not-allowed" : "pointer",
+                opacity: page === totalPages ? 0.5 : 1,
+              }}
+            >
+              &gt;
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
