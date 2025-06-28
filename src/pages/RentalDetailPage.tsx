@@ -12,6 +12,14 @@ import ReservationModal from "../components/ReservationModal";
 import ReservationSuccessModal from "../components/ReservationSuccessModal";
 import KakaoMap from "../components/KakaoMap";
 
+// 날짜를 YYYY-MM-DD 문자열로 변환하는 함수
+function getDateStringFromDateObject(date: Date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
 const RentalDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -32,8 +40,8 @@ const RentalDetailPage = () => {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const queryClient = useQueryClient();
 
-  // 날짜를 YYYY-MM-DD로 변환
-  const selectedDateStr = date.toISOString().slice(0, 10);
+  // 날짜를 YYYY-MM-DD로 변환 (항상 로컬 기준)
+  const selectedDateStr = getDateStringFromDateObject(date);
   const { place, loading, error, refetch } = usePlaceDetail(
     id,
     selectedDateStr
@@ -107,7 +115,7 @@ const RentalDetailPage = () => {
       const res = await placeService.reserve({
         placeId: place.id,
         password,
-        reservationDate: date.toISOString().slice(0, 10),
+        reservationDate: getDateStringFromDateObject(date),
         timeSlots: selectedTime.sort(),
       });
       setReservationResult(res);

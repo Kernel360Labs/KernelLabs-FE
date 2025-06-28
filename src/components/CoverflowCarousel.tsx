@@ -7,7 +7,6 @@ const images = [
   "https://storage.googleapis.com/udcode/workLocation/anise_image.jpg",
   "https://storage.googleapis.com/udcode/workLocation/cafenine_image.jpg",
   "https://storage.googleapis.com/udcode/workLocation/%E1%84%80%E1%85%AE%E1%84%80%E1%85%A8%E1%84%86%E1%85%B5%E1%86%AF%E1%84%85%E1%85%B5.jpg",
-  "https://storage.googleapis.com/udcode/workLocation/%E1%84%92%E1%85%A3%E1%86%BC%E1%84%8E%E1%85%A9%E1%86%AB%E1%84%83%E1%85%A1%E1%86%BC.jpg",
   "https://storage.googleapis.com/udcode/workLocation/modern29_image.jpg",
 ];
 
@@ -33,7 +32,11 @@ const arrowStyle: CSSProperties = {
 function NextArrow(props: any) {
   const { onClick } = props;
   return (
-    <button style={{ ...arrowStyle, right: -32 }} onClick={onClick} aria-label="다음">
+    <button
+      style={{ ...arrowStyle, right: -32 }}
+      onClick={onClick}
+      aria-label="다음"
+    >
       <span style={{ fontWeight: 700 }}>{">"}</span>
     </button>
   );
@@ -41,7 +44,11 @@ function NextArrow(props: any) {
 function PrevArrow(props: any) {
   const { onClick } = props;
   return (
-    <button style={{ ...arrowStyle, left: -32 }} onClick={onClick} aria-label="이전">
+    <button
+      style={{ ...arrowStyle, left: -32 }}
+      onClick={onClick}
+      aria-label="이전"
+    >
       <span style={{ fontWeight: 700 }}>{"<"}</span>
     </button>
   );
@@ -70,7 +77,14 @@ const CoverflowCarousel = () => {
   };
 
   return (
-    <div style={{ background: "#f5f6f2", padding: "48px 0 32px 0", width: "100vw", position: "relative" }}>
+    <div
+      style={{
+        background: "#f5f6f2",
+        padding: "48px 0 32px 0",
+        width: "100vw",
+        position: "relative",
+      }}
+    >
       <div style={{ maxWidth: 1400, margin: "0 auto", position: "relative" }}>
         <Slider {...settings}>
           {images.map((src, idx) => (
@@ -110,4 +124,4 @@ const CoverflowCarousel = () => {
   );
 };
 
-export default CoverflowCarousel; 
+export default CoverflowCarousel;
