@@ -25,10 +25,13 @@ export const placeService = {
     );
     return response.data;
   },
-  checkReservation: async (password: string): Promise<ReservationResponse> => {
-    const response = await axios.post<ReservationResponse>(
-      `${API_BASE_URL}/reservations/check`,
-      { password }
+  checkReservation: async (
+    reservationId: string,
+    password: string
+  ): Promise<ReservationResponse> => {
+    const response = await axios.get<ReservationResponse>(
+      `${API_BASE_URL}/reservations/${reservationId}`,
+      { data: { password } }
     );
     return response.data;
   },

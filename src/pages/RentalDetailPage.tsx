@@ -546,6 +546,28 @@ const RentalDetailPage = () => {
               >
                 예약이 완료되었습니다.
               </h3>
+              {reservationResult && (
+                <div
+                  style={{
+                    color: "#3A6351",
+                    fontWeight: 700,
+                    fontSize: "1.13rem",
+                    marginBottom: 10,
+                  }}
+                >
+                  예약 번호는 [ {reservationResult.data.reservationId} ] 입니다.
+                  <br />
+                  <span
+                    style={{
+                      fontWeight: 500,
+                      fontSize: "1.01rem",
+                      color: "#444",
+                    }}
+                  >
+                    예약 조회/변경/취소 시 필요하오니 꼭 기억해주세요.
+                  </span>
+                </div>
+              )}
               <div
                 style={{
                   color: "#3A6351",

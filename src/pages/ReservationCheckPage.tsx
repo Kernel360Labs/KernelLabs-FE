@@ -1,29 +1,34 @@
 import { useState } from "react";
-import { useReservationStore } from "../stores/placeStore";
 import { placeService } from "../services/placeService";
+import { useReservationStore } from "../stores/placeStore";
 
 const ReservationCheckPage = () => {
+  const [reservationId, setReservationId] = useState("");
   const [password, setPassword] = useState("");
-  const [result, setResult] = useState<any>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    reserving: loading,
+    reservationError: error,
+    reservationResult: result,
+    setReserving,
+    setReservationError,
+    setReservationResult,
+  } = useReservationStore();
 
   const handleCheck = async () => {
-    setLoading(true);
-    setError(null);
-    setResult(null);
+    setReserving(true);
+    setReservationError(null);
+    setReservationResult(null);
     try {
-      // 실제 API 엔드포인트에 맞게 수정 필요
-      const res = await placeService.checkReservation(password);
-      setResult(res.data);
+      const res = await placeService.checkReservation(reservationId, password);
+      setReservationResult(res);
     } catch (e: any) {
-      setError(
+      setReservationError(
         e?.response?.data?.message ||
           e.message ||
           "예약 내역을 찾을 수 없습니다."
       );
     } finally {
-      setLoading(false);
+      setReserving(false);
     }
   };
 
@@ -49,8 +54,30 @@ const ReservationCheckPage = () => {
         예약 확인
       </h2>
       <div style={{ marginBottom: 18, color: "#666" }}>
-        예약 시 입력한 4자리 비밀번호를 입력하세요.
+        예약번호와 예약 시 입력한 4자리 비밀번호를 입력하세요.
       </div>
+      <input
+        type="text"
+        inputMode="numeric"
+        maxLength={8}
+        pattern="[0-9]*"
+        value={reservationId}
+        onChange={(e) => {
+          if (/^\d{0,8}$/.test(e.target.value))
+            setReservationId(e.target.value);
+        }}
+        style={{
+          fontSize: "1.1rem",
+          padding: "0.6rem 1.1rem",
+          borderRadius: 8,
+          border: "1.5px solid #3A6351",
+          marginBottom: 12,
+          width: 160,
+          textAlign: "center",
+          letterSpacing: "0.1em",
+        }}
+        placeholder="예약번호"
+      />
       <input
         type="password"
         inputMode="numeric"
@@ -61,29 +88,38 @@ const ReservationCheckPage = () => {
           if (/^\d{0,4}$/.test(e.target.value)) setPassword(e.target.value);
         }}
         style={{
-          fontSize: "1.3rem",
-          padding: "0.7rem 1.2rem",
+          fontSize: "1.1rem",
+          padding: "0.6rem 1.1rem",
           borderRadius: 8,
           border: "1.5px solid #3A6351",
           marginBottom: 18,
           width: 160,
           textAlign: "center",
           letterSpacing: "0.3em",
+          marginLeft: 12,
         }}
-        placeholder="4자리 숫자"
+        placeholder="비밀번호"
       />
       <button
         onClick={handleCheck}
-        disabled={password.length !== 4 || loading}
+        disabled={
+          reservationId.length === 0 || password.length !== 4 || loading
+        }
         style={{
           padding: "0.7rem 1.5rem",
           borderRadius: 8,
           border: "none",
-          background: password.length === 4 && !loading ? "#3A6351" : "#e0e0e0",
+          background:
+            reservationId.length > 0 && password.length === 4 && !loading
+              ? "#3A6351"
+              : "#e0e0e0",
           color: "#fff",
           fontWeight: 700,
           fontSize: "1.05rem",
-          cursor: password.length === 4 && !loading ? "pointer" : "not-allowed",
+          cursor:
+            reservationId.length > 0 && password.length === 4 && !loading
+              ? "pointer"
+              : "not-allowed",
           marginLeft: 12,
         }}
       >
@@ -103,12 +139,12 @@ const ReservationCheckPage = () => {
           <div style={{ fontWeight: 700, fontSize: "1.1rem", marginBottom: 8 }}>
             예약 정보
           </div>
-          <div>장소: {result.placeName}</div>
-          <div>날짜: {result.reservationDate}</div>
+          <div>장소: {result.data.placeName}</div>
+          <div>날짜: {result.data.reservationDate}</div>
           <div>
-            시간: {result.startTime} ~ {result.endTime}
+            시간: {result.data.startTime} ~ {result.data.endTime}
           </div>
-          <div>예약번호: {result.reservationId}</div>
+          <div>예약번호: {result.data.reservationId}</div>
         </div>
       )}
     </div>
