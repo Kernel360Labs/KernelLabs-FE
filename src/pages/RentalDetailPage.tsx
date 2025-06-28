@@ -12,17 +12,6 @@ import TimeSlotSelector from "../components/TimeSlotSelector";
 import ReservationModal from "../components/ReservationModal";
 import ReservationSuccessModal from "../components/ReservationSuccessModal";
 
-function getHourSlots(open: string, close: string) {
-  // open, close: "10:00:00" ~ "21:00:00"
-  const openHour = parseInt(open.split(":")[0], 10);
-  const closeHour = parseInt(close.split(":")[0], 10);
-  const slots: string[] = [];
-  for (let h = openHour; h < closeHour; h++) {
-    slots.push(`${h}:00`);
-  }
-  return slots;
-}
-
 const RentalDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
