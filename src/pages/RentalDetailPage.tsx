@@ -196,23 +196,44 @@ const RentalDetailPage = () => {
         >
           {place.description}
         </div>
+        {/* 오픈/마감 시간, 가격 두 줄로 */}
         <div
           style={{
-            color: "#3A6351",
-            fontWeight: 600,
-            marginBottom: 8,
             display: "flex",
-            alignItems: "center",
-            gap: 8,
+            flexDirection: "column",
+            alignItems: "flex-start",
+            gap: 2,
+            marginBottom: 8,
           }}
         >
-          <span role="img" aria-label="clock">
-            ⏰
-          </span>
-          {place.openTime.slice(0, 5)} ~ {place.closeTime.slice(0, 5)}
-          <span style={{ margin: "0 6px", fontSize: "1.1em" }}>💵</span>
-          1시간{" "}
-          {place.unitPrice != null ? place.unitPrice.toLocaleString() : "0"}원
+          <div
+            style={{
+              color: "#3A6351",
+              fontWeight: 600,
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+            }}
+          >
+            <span role="img" aria-label="clock">
+              ⏰
+            </span>
+            {place.openTime.slice(0, 5)} ~ {place.closeTime.slice(0, 5)}
+          </div>
+          <div
+            style={{
+              color: "#3A6351",
+              fontWeight: 600,
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+              marginTop: 2,
+            }}
+          >
+            <span style={{ fontSize: "1.1em" }}>💵</span>
+            1시간{" "}
+            {place.unitPrice != null ? place.unitPrice.toLocaleString() : "0"}원
+          </div>
         </div>
         <RentalMapPlaceholder address={place.address} />
         <div
@@ -227,7 +248,7 @@ const RentalDetailPage = () => {
           </span>{" "}
           날짜와 시간을 선택해 주세요
         </div>
-        {/* 달력/시간 flex row: 완벽히 세로 중앙 정렬 */}
+        {/* 달력/시간 flex row: 완벽히 세로 중앙 정렬, 높이 통일, 가운데 정렬 */}
         <div
           style={{
             display: "flex",
@@ -238,36 +259,41 @@ const RentalDetailPage = () => {
             width: "100%",
             margin: "0 auto",
             maxWidth: 900,
+            minHeight: 340,
           }}
         >
           <div
             style={{
-              flex: 1,
+              width: 360,
               minWidth: 260,
               display: "flex",
               justifyContent: "center",
+              alignItems: "center",
+              minHeight: 320,
             }}
           >
-            <RentalCalendar value={date} onChange={setDate} />
+            <div style={{ width: "100%" }}>
+              <RentalCalendar value={date} onChange={setDate} />
+            </div>
           </div>
           {/* 시간 선택: open~close 기준 1시간 단위 버튼 */}
           {timeSlots.length > 0 && (
             <div
               style={{
-                flex: 1,
+                width: 360,
                 minWidth: 180,
-                width: "100%",
                 maxWidth: 420,
                 marginTop: window.innerWidth < 700 ? 16 : 0,
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
                 justifyContent: "center",
-                height: "100%",
+                minHeight: 320,
               }}
             >
               <div
                 style={{
+                  width: "100%",
                   display: "flex",
                   flexWrap: "wrap",
                   gap: 18,
@@ -303,7 +329,7 @@ const RentalDetailPage = () => {
             </div>
           )}
         </div>
-        {/* 예약 버튼: 가운데 정렬, 넓게 */}
+        {/* 예약 버튼 */}
         <div
           style={{ display: "flex", justifyContent: "center", marginTop: 32 }}
         >
