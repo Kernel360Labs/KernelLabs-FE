@@ -51,60 +51,83 @@ const MainPage = () => {
       }}
     >
       <div style={{ textAlign: "center", margin: "48px 0 32px 0" }}>
-        <div style={{
-          fontWeight: 700,
-          fontSize: "2.5rem",
-          color: "#222",
-          marginBottom: 8,
-          letterSpacing: "-1px"
-        }}>
+        <div
+          style={{
+            fontWeight: 700,
+            fontSize: "2.5rem",
+            color: "#222",
+            marginBottom: 8,
+            letterSpacing: "-1px",
+          }}
+        >
           Where you at?
         </div>
-        <div style={{
-          fontWeight: 900,
-          fontSize: "4.2rem",
-          color: "#111",
-          display: "inline-block",
-          position: "relative",
-          lineHeight: 1.1
-        }}>
+        <div
+          style={{
+            fontWeight: 900,
+            fontSize: "4.2rem",
+            color: "#111",
+            display: "inline-block",
+            position: "relative",
+            lineHeight: 1.1,
+          }}
+        >
           Uiseong Workation
-          <span style={{
-            color: "#f7a600",
-            fontSize: "2.2rem",
-            fontWeight: 700,
-            position: "absolute",
-            right: -60,
-            top: 18,
-            pointerEvents: "none",
-            userSelect: "none"
-          }}>
+          <span
+            style={{
+              color: "#f7a600",
+              fontSize: "2.2rem",
+              fontWeight: 700,
+              position: "absolute",
+              right: -60,
+              top: 18,
+              pointerEvents: "none",
+              userSelect: "none",
+            }}
+          >
             <svg width="60" height="40" viewBox="0 0 60 40" fill="none">
               <g stroke="#f7a600" strokeWidth="3" strokeLinecap="round">
-                <path d="M10 30 L20 10"/>
-                <path d="M20 35 L25 20"/>
-                <path d="M30 38 L32 28"/>
-                <path d="M40 35 L38 20"/>
-                <path d="M50 30 L45 10"/>
-                <circle cx="20" cy="10" r="2" fill="#f7a600"/>
-                <circle cx="45" cy="10" r="2" fill="#f7a600"/>
+                <path d="M10 30 L20 10" />
+                <path d="M20 35 L25 20" />
+                <path d="M30 38 L32 28" />
+                <path d="M40 35 L38 20" />
+                <path d="M50 30 L45 10" />
+                <circle cx="20" cy="10" r="2" fill="#f7a600" />
+                <circle cx="45" cy="10" r="2" fill="#f7a600" />
               </g>
             </svg>
           </span>
         </div>
-        <div style={{ fontWeight: 900, fontSize: "3rem", color: "#111", marginTop: 40, marginBottom: 24 }}>
+        <div
+          style={{
+            fontWeight: 900,
+            fontSize: "3rem",
+            color: "#111",
+            marginTop: 40,
+            marginBottom: 24,
+          }}
+        >
           일과 쉼, 그 사이 의성
         </div>
-        <div style={{ color: "#555", fontSize: "1.6rem", marginBottom: 8, lineHeight: 1.6, fontWeight: 400 }}>
-          자연에서 잘 일하고 잘 쉬는 법,<br />
-          의성갈래와 함께하세요!
+        <div
+          style={{
+            color: "#555",
+            fontSize: "1.6rem",
+            marginBottom: 8,
+            lineHeight: 1.6,
+            fontWeight: 400,
+          }}
+        >
+          자연에서 잘 일하고 잘 쉬는 법,
+          <br />
+          의성올래와 함께하세요!
         </div>
       </div>
       <CoverflowCarousel />
       {/* 워케이션 선택 섹션: 배경 이미지 + pill형 텍스트 */}
       <WorkationChoiceSection />
       {/* 3개의 bar 섹션 */}
-    
+
       <h1
         className="main-title"
         style={{
