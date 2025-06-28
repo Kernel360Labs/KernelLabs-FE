@@ -67,7 +67,7 @@ const Header = () => {
           onClick={() => navigate("/")}
         >
           <img
-            src="/image/symbol.png"
+            src="/image/logo.png"
             alt="의성 로고"
             className="header-logo-img"
             style={{ height: 44, marginRight: 14 }}
@@ -82,7 +82,7 @@ const Header = () => {
               fontFamily: "Pretendard, sans-serif",
             }}
           >
-            의성 갈래?
+            의성 올래?
           </span>
         </div>
         <div
@@ -117,7 +117,7 @@ const Header = () => {
             onMouseOver={(e) => (e.currentTarget.style.color = accentColor)}
             onMouseOut={(e) => (e.currentTarget.style.color = mainColor)}
           >
-            지금 의성 (의성 이주 정책)
+            의성 이주 정책
           </span>
           <nav style={{ display: "inline" }}>
             <span
