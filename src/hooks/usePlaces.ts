@@ -39,10 +39,13 @@ export const usePlaces = () => {
   };
 };
 
-export const usePlaceDetail = (id: string | number | undefined) => {
+export const usePlaceDetail = (
+  id: string | number | undefined,
+  date?: string
+) => {
   const query = useQuery<{ data: PlaceDetail }, Error>({
-    queryKey: ["placeDetail", id],
-    queryFn: () => placeService.getPlaceDetail(id!),
+    queryKey: ["placeDetail", id, date],
+    queryFn: () => placeService.getPlaceDetail(id!, date),
     enabled: !!id,
     staleTime: 5 * 60 * 1000,
     retry: 1,

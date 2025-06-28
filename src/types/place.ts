@@ -21,6 +21,7 @@ export interface PlaceDetail {
   closeTime: string;
   unitPrice: number;
   description: string;
+  timeSlots?: { time: string; available: boolean }[];
 }
 
 export interface PlaceDetailResponse {

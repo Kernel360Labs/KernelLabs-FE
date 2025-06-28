@@ -12,10 +12,15 @@ export const placeService = {
     const response = await axios.get<PlacesResponse>(`${API_BASE_URL}/places`);
     return response.data;
   },
-  getPlaceDetail: async (id: string | number): Promise<PlaceDetailResponse> => {
-    const response = await axios.get<PlaceDetailResponse>(
-      `${API_BASE_URL}/places/${id}`
-    );
+  getPlaceDetail: async (
+    id: string | number,
+    date?: string
+  ): Promise<PlaceDetailResponse> => {
+    let url = `${API_BASE_URL}/places/${id}`;
+    if (date) {
+      url += `?date=${date}`;
+    }
+    const response = await axios.get<PlaceDetailResponse>(url);
     return response.data;
   },
   reserve: async (data: ReservationRequest): Promise<ReservationResponse> => {

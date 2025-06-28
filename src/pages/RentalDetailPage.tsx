@@ -20,7 +20,6 @@ function getHourSlots(open: string, close: string) {
 const RentalDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { place, loading, error, refetch } = usePlaceDetail(id);
   const [date, setDate] = useState(new Date());
   const [selectedTime, setSelectedTime] = useState<string[]>([]);
   const [reserved, setReserved] = useState(false);
@@ -35,11 +34,34 @@ const RentalDetailPage = () => {
     setReservationResult,
     resetReservation,
   } = useReservationStore();
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
-  // 시간 슬롯 계산
+  // 날짜를 YYYY-MM-DD로 변환
+  const selectedDateStr = date.toISOString().slice(0, 10);
+  const { place, loading, error, refetch } = usePlaceDetail(
+    id,
+    selectedDateStr
+  );
+
+  // 시간 슬롯 계산 (API에서 제공하는 timeSlots 우선 사용)
   const timeSlots = useMemo(() => {
     if (!place) return [];
-    const slots = getHourSlots(place.openTime, place.closeTime);
+    if (place.timeSlots && place.timeSlots.length > 0) {
+      return [
+        {
+          label: `${place.openTime.slice(0, 5)} ~ ${place.closeTime.slice(
+            0,
+            5
+          )}`,
+          slots: place.timeSlots,
+        },
+      ];
+    }
+    // fallback: 기존 방식
+    const slots = getHourSlots(place.openTime, place.closeTime).map((t) => ({
+      time: t,
+      available: true,
+    }));
     return [
       {
         label: `${place.openTime.slice(0, 5)} ~ ${place.closeTime.slice(0, 5)}`,
@@ -125,8 +147,10 @@ const RentalDetailPage = () => {
       });
       setReservationResult(res);
       setShowModal(false);
+      setShowSuccessModal(true);
       setPassword("");
       setSelectedTime([]);
+      await refetch();
     } catch (e: any) {
       setReservationError(
         e?.response?.data?.message || e.message || "예약에 실패했습니다."
@@ -345,29 +369,39 @@ const RentalDetailPage = () => {
                   justifyContent: "center",
                 }}
               >
-                {timeSlots[0].slots.map((slot) => (
+                {timeSlots[0].slots.map((slotObj) => (
                   <button
-                    key={slot}
-                    onClick={() => handleTimeClick(slot)}
+                    key={slotObj.time}
+                    onClick={() =>
+                      slotObj.available && handleTimeClick(slotObj.time)
+                    }
+                    disabled={!slotObj.available}
                     style={{
                       padding: "0.55rem 0.9rem",
                       borderRadius: 8,
-                      border: selectedTime.includes(slot)
+                      border: selectedTime.includes(slotObj.time)
                         ? "2.5px solid #3A6351"
                         : "1.5px solid #e0e0e0",
-                      background: selectedTime.includes(slot)
+                      background: selectedTime.includes(slotObj.time)
                         ? "#3A6351"
-                        : "#fff",
-                      color: selectedTime.includes(slot) ? "#fff" : "#222",
+                        : slotObj.available
+                        ? "#fff"
+                        : "#f2f2f2",
+                      color: selectedTime.includes(slotObj.time)
+                        ? "#fff"
+                        : slotObj.available
+                        ? "#222"
+                        : "#bbb",
                       fontWeight: 700,
                       fontSize: "1.01rem",
-                      cursor: "pointer",
+                      cursor: slotObj.available ? "pointer" : "not-allowed",
                       marginBottom: 8,
                       minWidth: 80,
                       transition: "background 0.18s, color 0.18s, border 0.18s",
+                      opacity: slotObj.available ? 1 : 0.55,
                     }}
                   >
-                    {slot}
+                    {slotObj.time}
                   </button>
                 ))}
               </div>
@@ -510,7 +544,7 @@ const RentalDetailPage = () => {
           </div>
         )}
         {/* 예약 성공 안내 모달 */}
-        {reservationResult && (
+        {showSuccessModal && reservationResult && (
           <div
             style={{
               position: "fixed",
@@ -546,28 +580,26 @@ const RentalDetailPage = () => {
               >
                 예약이 완료되었습니다.
               </h3>
-              {reservationResult && (
-                <div
+              <div
+                style={{
+                  color: "#3A6351",
+                  fontWeight: 700,
+                  fontSize: "1.13rem",
+                  marginBottom: 10,
+                }}
+              >
+                예약 번호는 [ {reservationResult.data.reservationId} ] 입니다.
+                <br />
+                <span
                   style={{
-                    color: "#3A6351",
-                    fontWeight: 700,
-                    fontSize: "1.13rem",
-                    marginBottom: 10,
+                    fontWeight: 500,
+                    fontSize: "1.01rem",
+                    color: "#444",
                   }}
                 >
-                  예약 번호는 [ {reservationResult.data.reservationId} ] 입니다.
-                  <br />
-                  <span
-                    style={{
-                      fontWeight: 500,
-                      fontSize: "1.01rem",
-                      color: "#444",
-                    }}
-                  >
-                    예약 조회/변경/취소 시 필요하오니 꼭 기억해주세요.
-                  </span>
-                </div>
-              )}
+                  예약 조회/변경/취소 시 필요하오니 꼭 기억해주세요.
+                </span>
+              </div>
               <div
                 style={{
                   color: "#3A6351",
@@ -580,6 +612,7 @@ const RentalDetailPage = () => {
               </div>
               <button
                 onClick={() => {
+                  setShowSuccessModal(false);
                   resetReservation();
                 }}
                 style={{
