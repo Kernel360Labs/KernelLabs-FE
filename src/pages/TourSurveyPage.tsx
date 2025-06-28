@@ -1,15 +1,72 @@
-// TourSurveyPage.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { TOUR_RECOMMEND_URL } from "../api";
 
 const mainColor = "#3A6351";
 const bgColor = "#F5F7FA";
-const travelFont = `'Gowun Batang', 'Nanum Pen Script', 'Arial Rounded MT Bold', 'Arial', sans-serif`;
+// const travelFont = `'Gowun Batang', 'Nanum Pen Script', 'Arial Rounded MT Bold', 'Arial', sans-serif`;
+
+const questions = [
+  {
+    key: "startDate",
+    label: "출발 날짜를 선택하세요.",
+    type: "date",
+    required: true
+  },
+  {
+    key: "duration",
+    label: "여행 기간을 입력하세요.",
+    type: "text",
+    placeholder: "예: 2박 3일",
+    required: true
+  },
+  {
+    key: "time",
+    label: "시작 가능 시간을 입력하세요.",
+    type: "text",
+    placeholder: "예: 첫날 18시부터, 다음날은 종일",
+    required: true
+  },
+  {
+    key: "vibe",
+    label: "선호하는 분위기를 입력하세요.",
+    type: "text",
+    placeholder: "예: 조용하고 한적한, 활기찬",
+    required: true
+  },
+  {
+    key: "interests",
+    label: "관심 활동을 입력하세요.",
+    type: "text",
+    placeholder: "예: 역사 탐방, 자연 휴식, 미식",
+    required: true
+  },
+  {
+    key: "transportation",
+    label: "주요 이동 수단을 입력하세요.",
+    type: "text",
+    placeholder: "예: 자차, 도보, 대중교통",
+    required: true
+  },
+  {
+    key: "companion",
+    label: "동반자를 입력하세요.",
+    type: "text",
+    placeholder: "예: 혼자, 친구와, 가족과",
+    required: false
+  },
+  {
+    key: "budget",
+    label: "예상 경비를 입력하세요.",
+    type: "text",
+    placeholder: "예: 저렴, 보통, 여유",
+    required: false
+  }
+];
 
 const TourSurveyPage = () => {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<Record<string, string>>({
     startDate: "",
     duration: "",
     time: "",
@@ -17,28 +74,39 @@ const TourSurveyPage = () => {
     interests: "",
     transportation: "",
     companion: "",
-    budget: "",
+    budget: ""
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [step, setStep] = useState(0);
+  const totalSteps = questions.length;
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+  const currentQuestion = questions[step];
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData((prev) => ({ ...prev, [currentQuestion.key]: e.target.value }));
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleNext = () => {
+    if (currentQuestion.required && !formData[currentQuestion.key]) return;
+    setStep((prev) => prev + 1);
+  };
+
+  const handlePrev = () => {
+    setStep((prev) => prev - 1);
+  };
+
+  const handleStepperSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (step < totalSteps - 1) {
+      handleNext();
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
-    // const apiUrl = `http://34.53.50.247/vacations`;
-    const apiUrl = TOUR_RECOMMEND_URL;
-
-    // companion과 budget이 빈 문자열일 경우 null로 변환
     const requestData = {
       startDate: formData.startDate,
       duration: formData.duration,
@@ -51,12 +119,10 @@ const TourSurveyPage = () => {
     };
 
     try {
-      const response = await fetch(apiUrl, {
+      const response = await fetch(TOUR_RECOMMEND_URL, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(requestData)  // routeRequest 객체로 한 번 더 감싸지 않음
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(requestData)
       });
 
       if (!response.ok) {
@@ -65,17 +131,17 @@ const TourSurveyPage = () => {
       }
 
       const responseData = await response.json();
-      const routeJsonString = responseData.data.route.replace("```json\n", "").replace("\n```", ""); // Extract pure JSON string
-      const routePlan = JSON.parse(routeJsonString); // Parse the JSON string
+      const routeJsonString = responseData.data.route.replace("```json\n", "").replace("\n```", "");
+      const routePlan = JSON.parse(routeJsonString);
 
-      navigate("/tour-result", { state: { routePlan } }); // Pass the parsed plan to the result page
+      navigate("/tour-result", { state: { routePlan } });
     } catch (err) {
       console.error("API call failed:", err);
-      if (err instanceof Error) {
-        setError(err.message || "경로를 불러오는 데 실패했습니다. 다시 시도해주세요.");
-      } else {
-        setError("경로를 불러오는 데 실패했습니다. 다시 시도해주세요.");
-      }
+      setError(
+        err instanceof Error
+          ? err.message || "경로를 불러오는 데 실패했습니다. 다시 시도해주세요."
+          : "경로를 불러오는 데 실패했습니다. 다시 시도해주세요."
+      );
     } finally {
       setLoading(false);
     }
@@ -91,130 +157,153 @@ const TourSurveyPage = () => {
         alignItems: "center",
         justifyContent: "center",
         padding: "2rem 1rem",
-        fontFamily: travelFont,
+        // fontFamily: travelFont
       }}
     >
-      <h1
-        style={{
-          color: mainColor,
-          fontWeight: 800,
-          fontSize: "2rem",
-          marginBottom: "2rem",
-        }}
-      >
-        당신의 의성 여행 스타일은?
+      <h1 style={{ color: mainColor, fontWeight: 800, fontSize: "2rem", marginBottom: "1rem" }}>
+        질문에 답해주세요{" "}
+        <span style={{ color: "#4A90E2", fontSize: "1.2rem" }}>
+          ({step + 1}/{totalSteps})
+        </span>
       </h1>
+      <div style={{ color: "#888", marginBottom: "2rem", fontSize: "1.1rem" }}>
+        당신에게 딱 맞는 워케이션 장소를 찾아드립니다.
+      </div>
       <form
-        onSubmit={handleSubmit}
+        onSubmit={handleStepperSubmit}
         style={{
           display: "flex",
           flexDirection: "column",
-          gap: "1rem",
+          gap: "1.5rem",
           width: "100%",
           maxWidth: "500px",
           padding: "2rem",
           borderRadius: "15px",
           backgroundColor: "#fff",
-          boxShadow: "0 4px 20px rgba(0,0,0,0.05)",
+          boxShadow: "0 4px 20px rgba(0,0,0,0.05)"
         }}
       >
-        {/* Input fields for RouteRequest */}
-        {Object.keys(formData).map((key) => (
-          <div key={key} style={{ display: "flex", flexDirection: "column" }}>
-            <label
-              htmlFor={key}
+        <div style={{ fontWeight: 700, fontSize: "1.4rem", marginBottom: "1.5rem", textAlign: "center" }}>
+          {currentQuestion.label}
+        </div>
+
+        {currentQuestion.type === "text" && (
+          <input
+            type="text"
+            name={currentQuestion.key}
+            value={formData[currentQuestion.key] || ""}
+            onChange={handleInputChange}
+            placeholder={currentQuestion.placeholder || ""}
+            style={{
+              padding: "0.8rem",
+              borderRadius: "8px",
+              border: `1px solid ${mainColor}`,
+              fontSize: "1rem"
+            }}
+            required={currentQuestion.required}
+          />
+        )}
+
+        {currentQuestion.type === "date" && (
+          <input
+            type="date"
+            name={currentQuestion.key}
+            value={formData[currentQuestion.key] || ""}
+            onChange={handleInputChange}
+            style={{
+              padding: "0.8rem",
+              borderRadius: "8px",
+              border: `1px solid ${mainColor}`,
+              fontSize: "1rem"
+            }}
+            required={currentQuestion.required}
+          />
+        )}
+
+        <div style={{ display: "flex", justifyContent: "space-between", marginTop: "2rem" }}>
+          <button
+            type="button"
+            onClick={handlePrev}
+            disabled={step === 0}
+            style={{
+              padding: "0.8rem 2rem",
+              borderRadius: "8px",
+              border: "none",
+              background: step === 0 ? "#eee" : "#f0f0f0",
+              color: step === 0 ? "#bbb" : mainColor,
+              fontWeight: "bold",
+              fontSize: "1.1rem",
+              cursor: step === 0 ? "not-allowed" : "pointer"
+            }}
+          >
+            ← 이전
+          </button>
+
+          {step < totalSteps - 1 ? (
+            <button
+              type="submit"
+              disabled={currentQuestion.required && !formData[currentQuestion.key]}
               style={{
-                marginBottom: "0.5rem",
+                padding: "0.8rem 2rem",
+                borderRadius: "8px",
+                border: "none",
+                background: mainColor,
+                color: "#fff",
                 fontWeight: "bold",
-                color: mainColor,
+                fontSize: "1.1rem",
+                cursor: currentQuestion.required && !formData[currentQuestion.key] ? "not-allowed" : "pointer"
               }}
             >
-              {
-                {
-                  startDate: "출발 날짜",
-                  duration: "여행 기간",
-                  time: "시작 가능 시간",
-                  vibe: "선호하는 분위기",
-                  interests: "관심 활동 (콤마로 구분)",
-                  transportation: "주요 이동 수단",
-                  companion: "동반자 (선택 사항)",
-                  budget: "예상 경비 (선택 사항)",
-                }[key]
-              }
-              :
-            </label>
-            <input
-              type={key === "startDate" ? "date" : "text"}
-              id={key}
-              name={key}
-              value={formData[key as keyof typeof formData]}
-              onChange={handleChange}
-              placeholder={
-                {
-                  startDate: "예: 2025년 07월 01일",
-                  duration: "예: 2박 3일",
-                  time: "예: 첫날 18시부터, 다음날은 종일",
-                  vibe: "예: 조용하고 한적한, 활기찬",
-                  interests: "예: 역사 탐방, 자연 휴식, 미식",
-                  transportation: "예: 자차, 도보, 대중교통",
-                  companion: "예: 혼자, 친구와, 가족과",
-                  budget: "예: 저렴, 보통, 여유",
-                }[key]
-              }
+              다음 →
+            </button>
+          ) : (
+            <button
+              type="submit"
+              disabled={currentQuestion.required && !formData[currentQuestion.key]}
               style={{
-                padding: "0.8rem",
+                padding: "0.8rem 2rem",
                 borderRadius: "8px",
-                border: `1px solid ${mainColor}`,
-                fontSize: "1rem",
+                border: "none",
+                background: mainColor,
+                color: "#fff",
+                fontWeight: "bold",
+                fontSize: "1.1rem",
+                cursor: currentQuestion.required && !formData[currentQuestion.key] ? "not-allowed" : "pointer"
               }}
-              // Make companion and budget optional if they are nullable in backend
-              required={key !== "companion" && key !== "budget"}
-            />
-          </div>
-        ))}
+            >
+              제출
+            </button>
+          )}
+        </div>
 
-        <button
-          type="submit"
-          disabled={loading}
-          style={{
-            marginTop: "1.5rem",
-            padding: "1rem 2rem",
-            borderRadius: "10px",
-            border: "none",
-            backgroundColor: mainColor,
-            color: "#fff",
-            fontSize: "1.2rem",
-            fontWeight: "bold",
-            cursor: "pointer",
-            transition: "background-color 0.3s ease",
-          }}
-        >
-          {loading ? "경로 생성 중..." : "여행 경로 추천받기"}
-        </button>
-        {error && (
-          <p style={{ color: "red", marginTop: "1rem", textAlign: "center" }}>
-            {error}
-          </p>
-        )}
+        {error && <p style={{ color: "red", marginTop: "1rem", textAlign: "center" }}>{error}</p>}
+
         {loading && (
-          <div style={{
-            position: "fixed",
-            top: 0, left: 0, right: 0, bottom: 0,
-            background: "rgba(0,0,0,0.3)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 9999
-          }}>
-            <div style={{
-              background: "#fff",
-              padding: "3rem 5rem",
-              borderRadius: "32px",
-              boxShadow: "0 4px 32px rgba(0,0,0,0.15)",
-              fontSize: "2.5rem",
-              color: mainColor,
-              fontWeight: "bold"
-            }}>
+          <div
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: "rgba(0,0,0,0.3)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              zIndex: 9999
+            }}
+          >
+            <div
+              style={{
+                background: "#fff",
+                padding: "3rem 5rem",
+                borderRadius: "32px",
+                boxShadow: "0 4px 32px rgba(0,0,0,0.15)",
+                fontSize: "2.5rem",
+                color: mainColor,
+                fontWeight: "bold"
+              }}
+            >
               경로 생성 중...
             </div>
           </div>
