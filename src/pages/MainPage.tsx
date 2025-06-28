@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import CoverflowCarousel from "../components/CoverflowCarousel";
+import WorkationChoiceSection from "../components/WorkationChoiceSection";
 
 const mainColor = "#3A6351";
 const accentColor = "#4A90E2";
@@ -100,6 +101,10 @@ const MainPage = () => {
         </div>
       </div>
       <CoverflowCarousel />
+      {/* 워케이션 선택 섹션: 배경 이미지 + pill형 텍스트 */}
+      <WorkationChoiceSection />
+      {/* 3개의 bar 섹션 */}
+    
       <h1
         className="main-title"
         style={{
