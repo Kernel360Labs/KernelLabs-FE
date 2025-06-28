@@ -57,10 +57,13 @@ body {
   background: none;
   border: none;
   border-radius: 8px;
-  font-size: 1rem;
+  font-size: 0.78rem;
   color: #333;
-  padding: 8px 0;
+  padding: 4px 0;
+  line-height: 1.1;
+  height: 28px;
   transition: background 0.2s, color 0.2s;
+  white-space: nowrap;
 }
 
 .react-calendar__tile:enabled:hover,

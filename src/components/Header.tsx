@@ -98,11 +98,26 @@ const Header = () => {
               marginRight: 8,
               transition: "color 0.2s",
             }}
+            onClick={() => navigate("/travel-planner")}
+            onMouseOver={(e) => (e.currentTarget.style.color = accentColor)}
+            onMouseOut={(e) => (e.currentTarget.style.color = mainColor)}
+          >
+            AI 의성 여행 플래너
+          </span>
+          <span
+            style={{
+              color: mainColor,
+              fontWeight: 600,
+              fontSize: "1.1rem",
+              cursor: "pointer",
+              marginRight: 8,
+              transition: "color 0.2s",
+            }}
             onClick={() => navigate("/about")}
             onMouseOver={(e) => (e.currentTarget.style.color = accentColor)}
             onMouseOut={(e) => (e.currentTarget.style.color = mainColor)}
           >
-            의성
+            지금 의성 (의성 이주 정책)
           </span>
           <nav style={{ display: "inline" }}>
             <span
@@ -121,6 +136,25 @@ const Header = () => {
               일할 장소 찾기
             </span>
           </nav>
+          <span
+            style={{
+              color: mainColor,
+              fontWeight: 600,
+              fontSize: "1.1rem",
+              cursor: "pointer",
+              marginLeft: 8,
+              transition: "color 0.2s",
+              border: "1.5px solid #3A6351",
+              borderRadius: 8,
+              padding: "0.3rem 1.1rem",
+              background: "#f8faf8",
+            }}
+            onClick={() => navigate("/reservation-check")}
+            onMouseOver={(e) => (e.currentTarget.style.background = "#e6f4ea")}
+            onMouseOut={(e) => (e.currentTarget.style.background = "#f8faf8")}
+          >
+            예약 확인
+          </span>
         </div>
       </div>
     </header>
