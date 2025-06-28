@@ -1,116 +1,70 @@
-import { useNavigate, useParams } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import RentalPlaceList from "../components/RentalPlaceList";
-import RentalMapPlaceholder from "../components/RentalMapPlaceholder";
-import RentalCalendar from "../components/RentalCalendar";
-import RentalTimeSelector from "../components/RentalTimeSelector";
-
-const dummyPlaces = [
-  {
-    id: 1,
-    name: "의성 워케이션 센터",
-    address: "경북 의성군 의성읍 중앙로 123",
-  },
-  { id: 2, name: "의성 카페 24시", address: "경북 의성군 봉양면 봉양로 45" },
-  {
-    id: 3,
-    name: "의성 코워킹 스페이스",
-    address: "경북 의성군 단촌면 단촌로 77",
-  },
-];
-
-const timeSlots = [
-  { label: "오전", slots: ["11:00"] },
-  {
-    label: "오후",
-    slots: [
-      "12:00",
-      "1:00",
-      "2:00",
-      "3:00",
-      "4:00",
-      "5:00",
-      "6:00",
-      "7:00",
-      "8:00",
-    ],
-  },
-];
-
-function RentalDetail({ place }: { place: (typeof dummyPlaces)[0] }) {
-  const [date, setDate] = useState(new Date());
-  const [selectedTime, setSelectedTime] = useState<string[]>([]);
-  const [reserved, setReserved] = useState(false);
-
-  const handleReserve = () => {
-    if (!selectedTime.length) return;
-    setReserved(true);
-    alert("예약이 완료되었습니다! (메일 전송은 추후 구현)");
-  };
-
-  return (
-    <div style={{ maxWidth: 700, margin: "2rem auto", padding: 24 }}>
-      <h2 style={{ fontWeight: 700, fontSize: "1.5rem", marginBottom: 8 }}>
-        {place.name}
-      </h2>
-      <div style={{ color: "#888", marginBottom: 18 }}>{place.address}</div>
-      <RentalMapPlaceholder address={place.address} />
-      <div style={{ fontWeight: 600, fontSize: "1.1rem", marginBottom: 16 }}>
-        <span role="img" aria-label="calendar">
-          📅
-        </span>{" "}
-        날짜와 시간을 선택해 주세요
-      </div>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: 24,
-        }}
-      >
-        <RentalCalendar value={date} onChange={setDate} />
-        <RentalTimeSelector
-          selectedTime={selectedTime}
-          onSelect={setSelectedTime}
-          timeSlots={timeSlots}
-        />
-        <button
-          onClick={handleReserve}
-          disabled={!selectedTime.length}
-          style={{
-            marginTop: 18,
-            padding: "0.9rem 2.2rem",
-            borderRadius: 10,
-            border: "none",
-            background: selectedTime.length
-              ? reserved
-                ? "#aaa"
-                : "#3A6351"
-              : "#e0e0e0",
-            color: "#fff",
-            fontWeight: 700,
-            fontSize: "1.15rem",
-            cursor:
-              selectedTime.length && !reserved ? "pointer" : "not-allowed",
-            transition: "background 0.2s",
-          }}
-        >
-          {reserved ? "예약 완료" : selectedTime.length ? "예약 완료" : "예약"}
-        </button>
-      </div>
-    </div>
-  );
-}
+import { usePlaces } from "../hooks/usePlaces";
 
 const RentalPage = () => {
   const navigate = useNavigate();
-  const { id } = useParams();
-  if (id) {
-    const place = dummyPlaces.find((p) => String(p.id) === id);
-    if (!place) return <div>장소를 찾을 수 없습니다.</div>;
-    return <RentalDetail place={place} />;
+  const { places, loading, error, refetch } = usePlaces();
+
+  // 페이지네이션 상태
+  const [page, setPage] = useState(1);
+  const pageSize = 6;
+  const totalPages = Math.ceil(places.length / pageSize);
+  const pagedPlaces = places.slice((page - 1) * pageSize, page * pageSize);
+
+  // 반응형 minHeight 계산
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // 카드 높이 고정: 한 줄 3개, 두 줄(6개) 기준으로 minHeight 설정 (카드 높이+gap 고려)
+  const cardHeight = 270; // 카드+패딩+마진 대략값(px)
+  const gridGap = 32; // gap 값
+  let minHeight = cardHeight * 2 + gridGap; // 기본 2줄(6개)
+  if (windowWidth < 800) {
+    minHeight = cardHeight + gridGap; // 1줄(3개)
   }
+
+  if (loading) {
+    return (
+      <div style={{ textAlign: "center", padding: "2rem" }}>
+        <div style={{ fontSize: "1.2rem", color: "#666" }}>
+          장소 목록을 불러오는 중...
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div style={{ textAlign: "center", padding: "2rem" }}>
+        <div
+          style={{ fontSize: "1.2rem", color: "#e74c3c", marginBottom: "1rem" }}
+        >
+          오류가 발생했습니다: {error}
+        </div>
+        <button
+          onClick={() => refetch()}
+          style={{
+            padding: "0.8rem 1.5rem",
+            borderRadius: 8,
+            border: "none",
+            background: "#3A6351",
+            color: "#fff",
+            fontWeight: 600,
+            cursor: "pointer",
+          }}
+        >
+          다시 시도
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div
       style={{
@@ -137,11 +91,76 @@ const RentalPage = () => {
           날짜도 지정할 수 있습니다.
         </div>
       </div>
-      <div style={{ maxWidth: 560, width: "100%", margin: "0 auto" }}>
-        <RentalPlaceList
-          places={dummyPlaces}
-          onSelect={(id) => navigate(`/rental/${id}`)}
-        />
+      <div style={{ maxWidth: 900, width: "100%", margin: "0 auto" }}>
+        <div style={{ minHeight, width: "100%" }}>
+          <RentalPlaceList
+            places={pagedPlaces}
+            onSelect={(id) => navigate(`/rental/${id}`)}
+          />
+        </div>
+        {/* 페이지네이션 UI */}
+        {totalPages > 1 && (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              gap: 12,
+              marginTop: 32,
+            }}
+          >
+            <button
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page === 1}
+              style={{
+                background: "none",
+                border: "none",
+                color: "#3A6351",
+                fontWeight: 700,
+                fontSize: "1.2rem",
+                cursor: page === 1 ? "not-allowed" : "pointer",
+                opacity: page === 1 ? 0.5 : 1,
+              }}
+            >
+              &lt;
+            </button>
+            {Array.from({ length: totalPages }, (_, i) => (
+              <button
+                key={i + 1}
+                onClick={() => setPage(i + 1)}
+                style={{
+                  background: page === i + 1 ? "#3A6351" : "none",
+                  color: page === i + 1 ? "#fff" : "#3A6351",
+                  border: "none",
+                  borderRadius: 6,
+                  fontWeight: 700,
+                  fontSize: "1.1rem",
+                  width: 32,
+                  height: 32,
+                  cursor: "pointer",
+                  margin: "0 2px",
+                  transition: "background 0.2s",
+                }}
+              >
+                {i + 1}
+              </button>
+            ))}
+            <button
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={page === totalPages}
+              style={{
+                background: "none",
+                border: "none",
+                color: "#3A6351",
+                fontWeight: 700,
+                fontSize: "1.2rem",
+                cursor: page === totalPages ? "not-allowed" : "pointer",
+                opacity: page === totalPages ? 0.5 : 1,
+              }}
+            >
+              &gt;
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
