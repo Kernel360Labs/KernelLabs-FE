@@ -32,6 +32,24 @@ const transformTimeSlots = (timeSlots: any[]) => {
   });
 };
 
+// 날짜를 YYYY-MM-DD (KST 기준, 항상 00:00:00로 고정)로 변환하는 함수
+function getKSTDateString(date: Date) {
+  // 항상 00:00:00로 맞추고 변환
+  const localDate = new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate(),
+    0,
+    0,
+    0
+  );
+  const kst = new Date(localDate.getTime() + 9 * 60 * 60 * 1000);
+  const year = kst.getUTCFullYear();
+  const month = String(kst.getUTCMonth() + 1).padStart(2, "0");
+  const day = String(kst.getUTCDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
 export const placeService = {
   getPlaces: async (): Promise<PlacesResponse> => {
     const response = await axios.get<PlacesResponse>(`${API_BASE_URL}/places`);
@@ -57,9 +75,36 @@ export const placeService = {
     return response.data;
   },
   reserve: async (data: ReservationRequest): Promise<ReservationResponse> => {
+    const payload = {
+      placeId: Number(data.placeId),
+      password: String(data.password),
+      reservationDate:
+        typeof data.reservationDate === "string"
+          ? data.reservationDate
+          : getKSTDateString(data.reservationDate),
+      timeSlots: data.timeSlots.map(String),
+    };
+
+    // 빈 값/undefined/null 제거
+    (Object.keys(payload) as (keyof typeof payload)[]).forEach((key) => {
+      if (
+        payload[key] === undefined ||
+        payload[key] === null ||
+        (typeof payload[key] === "string" && payload[key].trim() === "") ||
+        (Array.isArray(payload[key]) && payload[key].length === 0)
+      ) {
+        delete payload[key];
+      }
+    });
+
+    console.log("예약 요청 데이터:", payload);
+
     const response = await axios.post<ReservationResponse>(
       `${API_BASE_URL}/reservations`,
-      data
+      payload,
+      {
+        headers: { "Content-Type": "application/json" },
+      }
     );
     return response.data;
   },
