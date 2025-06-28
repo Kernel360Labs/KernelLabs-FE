@@ -12,6 +12,7 @@ import AboutPage from "./pages/AboutPage";
 import ReservationCheckPage from "./pages/ReservationCheckPage";
 import MetaversePage from "./pages/MetaversePage";
 import Chatbot from "./components/Chatbot";
+import RentalDetailPage from "./pages/RentalDetailPage";
 
 function App() {
   return (
@@ -24,7 +25,7 @@ function App() {
           <Route path="tour-result" element={<TourResultPage />} />{" "}
           <Route path="travel-planner" element={<TravelPlannerPage />} />
           <Route path="rental" element={<RentalPage />} />
-          <Route path="rental/:id" element={<RentalPage />} />
+          <Route path="rental/:id" element={<RentalDetailPage />} />
           <Route path="about" element={<AboutPage />} />
           <Route path="reservation-check" element={<ReservationCheckPage />} />
         </Route>

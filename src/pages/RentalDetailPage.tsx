@@ -2,7 +2,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useState, useMemo } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { usePlaceDetail } from "../hooks/usePlaces";
-import RentalMapPlaceholder from "../components/RentalMapPlaceholder";
 import RentalCalendar from "../components/RentalCalendar";
 import { useReservationStore } from "../stores/placeStore";
 import { placeService } from "../services/placeService";
@@ -11,6 +10,7 @@ import PlaceInfo from "../components/PlaceInfo";
 import TimeSlotSelector from "../components/TimeSlotSelector";
 import ReservationModal from "../components/ReservationModal";
 import ReservationSuccessModal from "../components/ReservationSuccessModal";
+import KakaoMap from "../components/KakaoMap";
 
 const RentalDetailPage = () => {
   const { id } = useParams();
@@ -175,7 +175,7 @@ const RentalDetailPage = () => {
           closeTime={place.closeTime}
           unitPrice={place.unitPrice || 0}
         />
-        <RentalMapPlaceholder address={place.address} />
+        <KakaoMap address={place.address} />
         <div
           style={{
             fontWeight: 600,
