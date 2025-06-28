@@ -4,7 +4,7 @@ import { TOUR_RECOMMEND_URL } from "../api";
 
 const mainColor = "#3A6351";
 const bgColor = "#F5F7FA";
-const travelFont = `'Gowun Batang', 'Nanum Pen Script', 'Arial Rounded MT Bold', 'Arial', sans-serif`;
+// const travelFont = `'Gowun Batang', 'Nanum Pen Script', 'Arial Rounded MT Bold', 'Arial', sans-serif`;
 
 const questions = [
   {
@@ -157,7 +157,7 @@ const TourSurveyPage = () => {
         alignItems: "center",
         justifyContent: "center",
         padding: "2rem 1rem",
-        fontFamily: travelFont
+        // fontFamily: travelFont
       }}
     >
       <h1 style={{ color: mainColor, fontWeight: 800, fontSize: "2rem", marginBottom: "1rem" }}>
