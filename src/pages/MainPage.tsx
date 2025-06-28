@@ -49,13 +49,54 @@ const MainPage = () => {
         padding: "0 1rem",
       }}
     >
-      <div style={{ textAlign: "center", marginBottom: 24, marginTop: 24 }}>
-        <div style={{ fontWeight: 800, fontSize: "2.3rem", color: mainColor, marginBottom: 10 }}>
-          자연과 함께하는 힐링 여행
+      <div style={{ textAlign: "center", margin: "48px 0 32px 0" }}>
+        <div style={{
+          fontWeight: 700,
+          fontSize: "2.5rem",
+          color: "#222",
+          marginBottom: 8,
+          letterSpacing: "-1px"
+        }}>
+          Where you at?
         </div>
-        <div style={{ color: "#666", fontSize: "1.15rem", marginBottom: 4 }}>
-          자연과의 만남에서 시작된 아름다운 스토리 의성 워케이션<br />
-          지금 바로 워케이션 장소와 여행일정을 추천받아보세요
+        <div style={{
+          fontWeight: 900,
+          fontSize: "4.2rem",
+          color: "#111",
+          display: "inline-block",
+          position: "relative",
+          lineHeight: 1.1
+        }}>
+          Uiseong Workation
+          <span style={{
+            color: "#f7a600",
+            fontSize: "2.2rem",
+            fontWeight: 700,
+            position: "absolute",
+            right: -60,
+            top: 18,
+            pointerEvents: "none",
+            userSelect: "none"
+          }}>
+            <svg width="60" height="40" viewBox="0 0 60 40" fill="none">
+              <g stroke="#f7a600" strokeWidth="3" strokeLinecap="round">
+                <path d="M10 30 L20 10"/>
+                <path d="M20 35 L25 20"/>
+                <path d="M30 38 L32 28"/>
+                <path d="M40 35 L38 20"/>
+                <path d="M50 30 L45 10"/>
+                <circle cx="20" cy="10" r="2" fill="#f7a600"/>
+                <circle cx="45" cy="10" r="2" fill="#f7a600"/>
+              </g>
+            </svg>
+          </span>
+        </div>
+        <div style={{ fontWeight: 900, fontSize: "3rem", color: "#111", marginTop: 40, marginBottom: 24 }}>
+          일과 쉼, 그 사이 의성
+        </div>
+        <div style={{ color: "#555", fontSize: "1.6rem", marginBottom: 8, lineHeight: 1.6, fontWeight: 400 }}>
+          자연에서 잘 일하고 잘 쉬는 법,<br />
+          의성갈래와 함께하세요!
         </div>
       </div>
       <CoverflowCarousel />
