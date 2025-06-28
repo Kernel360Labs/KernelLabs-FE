@@ -102,7 +102,7 @@ const Header = () => {
             onMouseOver={(e) => (e.currentTarget.style.color = accentColor)}
             onMouseOut={(e) => (e.currentTarget.style.color = mainColor)}
           >
-            의성
+            지금 의성 (의성 이주 정책)
           </span>
           <nav style={{ display: "inline" }}>
             <span
