@@ -53,11 +53,19 @@ const questions = [
   },
 ];
 
+interface WorkationResult {
+  name: string;
+  description: string;
+  type: string;
+  address: string;
+  imgUrl?: string;
+}
+
 const WorkationSurveyPage = () => {
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<{ [key: string]: string }>({});
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<any>(null);
+  const [result, setResult] = useState<WorkationResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [selected, setSelected] = useState<string | null>(answers[questions[step].key] || null);
 
@@ -87,7 +95,7 @@ const WorkationSurveyPage = () => {
         if (!res.ok) throw new Error("서버 오류");
         const data = await res.json();
         setResult(data.data);
-      } catch (e) {
+      } catch {
         setError("추천 결과를 불러오지 못했습니다.");
       } finally {
         setLoading(false);
@@ -148,7 +156,37 @@ const WorkationSurveyPage = () => {
             </div>
           </div>
           <div style={{ textAlign: "center", marginTop: 48 }}>
-            <button style={{ padding: "14px 44px", fontSize: 18, borderRadius: 8, border: "none", background: "#222", color: "#fff", fontWeight: 600, cursor: "pointer" }} onClick={() => { setStep(0); setAnswers({}); setResult(null); setSelected(null); }}>다시 설문하기</button>
+            <button 
+              style={{ 
+                padding: "14px 44px", 
+                fontSize: 18, 
+                borderRadius: 8, 
+                border: "none", 
+                background: "#6CB33F", 
+                color: "#fff", 
+                fontWeight: 600, 
+                cursor: "pointer",
+                marginRight: "16px"
+              }} 
+              onClick={() => window.open('/metaverse.html', '_blank')}
+            >
+              🥽 메타버스로 살펴보기
+            </button>
+            <button 
+              style={{ 
+                padding: "14px 44px", 
+                fontSize: 18, 
+                borderRadius: 8, 
+                border: "none", 
+                background: "#222", 
+                color: "#fff", 
+                fontWeight: 600, 
+                cursor: "pointer" 
+              }} 
+              onClick={() => { setStep(0); setAnswers({}); setResult(null); setSelected(null); }}
+            >
+              다시 설문하기
+            </button>
           </div>
         </div>
       </div>
