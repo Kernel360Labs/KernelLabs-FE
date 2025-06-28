@@ -5,6 +5,11 @@ import RentalMapPlaceholder from "../components/RentalMapPlaceholder";
 import RentalCalendar from "../components/RentalCalendar";
 import { useReservationStore } from "../stores/placeStore";
 import { placeService } from "../services/placeService";
+import PlaceImage from "../components/PlaceImage";
+import PlaceInfo from "../components/PlaceInfo";
+import TimeSlotSelector from "../components/TimeSlotSelector";
+import ReservationModal from "../components/ReservationModal";
+import ReservationSuccessModal from "../components/ReservationSuccessModal";
 
 function getHourSlots(open: string, close: string) {
   // open, close: "10:00:00" ~ "21:00:00"
@@ -22,7 +27,7 @@ const RentalDetailPage = () => {
   const navigate = useNavigate();
   const [date, setDate] = useState(new Date());
   const [selectedTime, setSelectedTime] = useState<string[]>([]);
-  const [reserved, setReserved] = useState(false);
+  const [reserved] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [password, setPassword] = useState("");
   const {
@@ -69,27 +74,6 @@ const RentalDetailPage = () => {
       },
     ];
   }, [place]);
-
-  // 시간 선택 핸들러 (최대 3개, 다시 클릭 시 해제, 연속성 체크)
-  const handleTimeClick = (slot: string) => {
-    const idx = selectedTime.indexOf(slot);
-    let next: string[];
-    if (idx > -1) {
-      // 이미 선택된 경우 해제
-      next = selectedTime.filter((s) => s !== slot);
-    } else {
-      if (selectedTime.length >= 3) return; // 최대 3개
-      next = [...selectedTime, slot].sort();
-    }
-    // 연속성 체크 (선택된 시간들이 연속인지)
-    if (next.length > 1) {
-      const indices = next.map((s) => parseInt(s)).sort((a, b) => a - b);
-      for (let i = 1; i < indices.length; i++) {
-        if (indices[i] !== indices[i - 1] + 1) return; // 불연속이면 무시
-      }
-    }
-    setSelectedTime(next);
-  };
 
   if (loading) {
     return (
@@ -184,52 +168,7 @@ const RentalDetailPage = () => {
         boxShadow: "0 4px 24px rgba(58,99,81,0.08)",
       }}
     >
-      {/* Top image */}
-      <div
-        style={{
-          width: "100%",
-          height: 260,
-          borderTopLeftRadius: 18,
-          borderTopRightRadius: 18,
-          overflow: "hidden",
-          background: "#f2f2f2",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        {place.thumbnailUrl ? (
-          <img
-            src={place.thumbnailUrl}
-            alt={place.name}
-            style={{
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
-              display: "block",
-            }}
-            onError={(e) => {
-              (e.target as HTMLImageElement).style.display = "none";
-            }}
-          />
-        ) : (
-          <div
-            style={{
-              width: "100%",
-              height: "100%",
-              background: "#e0e0e0",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              color: "#aaa",
-              fontSize: 32,
-            }}
-          >
-            이미지 없음
-          </div>
-        )}
-      </div>
-      {/* Info section */}
+      <PlaceImage thumbnailUrl={place.thumbnailUrl} name={place.name} />
       <div style={{ padding: 24 }}>
         <button
           onClick={() => navigate(-1)}
@@ -245,65 +184,13 @@ const RentalDetailPage = () => {
         >
           ← 목록으로
         </button>
-        <h2
-          style={{
-            fontWeight: 800,
-            fontSize: "1.5rem",
-            marginBottom: 4,
-            color: "#222",
-          }}
-        >
-          {place.name}
-        </h2>
-        <div
-          style={{
-            color: "#888",
-            fontWeight: 500,
-            fontSize: "1.08rem",
-            marginBottom: 8,
-          }}
-        >
-          {place.description}
-        </div>
-        {/* 오픈/마감 시간, 가격 두 줄로 */}
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "flex-start",
-            gap: 2,
-            marginBottom: 8,
-          }}
-        >
-          <div
-            style={{
-              color: "#3A6351",
-              fontWeight: 600,
-              display: "flex",
-              alignItems: "center",
-              gap: 8,
-            }}
-          >
-            <span role="img" aria-label="clock">
-              ⏰
-            </span>
-            {place.openTime.slice(0, 5)} ~ {place.closeTime.slice(0, 5)}
-          </div>
-          <div
-            style={{
-              color: "#3A6351",
-              fontWeight: 600,
-              display: "flex",
-              alignItems: "center",
-              gap: 8,
-              marginTop: 2,
-            }}
-          >
-            <span style={{ fontSize: "1.1em" }}>💵</span>
-            1시간{" "}
-            {place.unitPrice != null ? place.unitPrice.toLocaleString() : "0"}원
-          </div>
-        </div>
+        <PlaceInfo
+          name={place.name}
+          description={place.description}
+          openTime={place.openTime}
+          closeTime={place.closeTime}
+          unitPrice={place.unitPrice}
+        />
         <RentalMapPlaceholder address={place.address} />
         <div
           style={{
@@ -360,51 +247,12 @@ const RentalDetailPage = () => {
                 minHeight: 320,
               }}
             >
-              <div
-                style={{
-                  width: "100%",
-                  display: "flex",
-                  flexWrap: "wrap",
-                  gap: 18,
-                  justifyContent: "center",
-                }}
-              >
-                {timeSlots[0].slots.map((slotObj) => (
-                  <button
-                    key={slotObj.time}
-                    onClick={() =>
-                      slotObj.available && handleTimeClick(slotObj.time)
-                    }
-                    disabled={!slotObj.available}
-                    style={{
-                      padding: "0.55rem 0.9rem",
-                      borderRadius: 8,
-                      border: selectedTime.includes(slotObj.time)
-                        ? "2.5px solid #3A6351"
-                        : "1.5px solid #e0e0e0",
-                      background: selectedTime.includes(slotObj.time)
-                        ? "#3A6351"
-                        : slotObj.available
-                        ? "#fff"
-                        : "#f2f2f2",
-                      color: selectedTime.includes(slotObj.time)
-                        ? "#fff"
-                        : slotObj.available
-                        ? "#222"
-                        : "#bbb",
-                      fontWeight: 700,
-                      fontSize: "1.01rem",
-                      cursor: slotObj.available ? "pointer" : "not-allowed",
-                      marginBottom: 8,
-                      minWidth: 80,
-                      transition: "background 0.18s, color 0.18s, border 0.18s",
-                      opacity: slotObj.available ? 1 : 0.55,
-                    }}
-                  >
-                    {slotObj.time}
-                  </button>
-                ))}
-              </div>
+              <TimeSlotSelector
+                slots={timeSlots[0].slots}
+                selectedTime={selectedTime}
+                onSelect={setSelectedTime}
+                maxSelect={3}
+              />
             </div>
           )}
         </div>
@@ -437,200 +285,25 @@ const RentalDetailPage = () => {
             예약
           </button>
         </div>
-        {/* 예약 모달 */}
-        {showModal && (
-          <div
-            style={{
-              position: "fixed",
-              left: 0,
-              top: 0,
-              width: "100vw",
-              height: "100vh",
-              background: "rgba(0,0,0,0.25)",
-              zIndex: 1000,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <div
-              style={{
-                background: "#fff",
-                borderRadius: 16,
-                padding: 32,
-                minWidth: 320,
-                boxShadow: "0 4px 24px rgba(0,0,0,0.13)",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-              }}
-            >
-              <h3
-                style={{
-                  fontWeight: 700,
-                  fontSize: "1.2rem",
-                  marginBottom: 18,
-                }}
-              >
-                예약 비밀번호 입력
-              </h3>
-              <input
-                type="password"
-                inputMode="numeric"
-                maxLength={4}
-                pattern="[0-9]*"
-                value={password}
-                onChange={(e) => {
-                  if (/^\d{0,4}$/.test(e.target.value))
-                    setPassword(e.target.value);
-                }}
-                style={{
-                  fontSize: "1.3rem",
-                  padding: "0.7rem 1.2rem",
-                  borderRadius: 8,
-                  border: "1.5px solid #3A6351",
-                  marginBottom: 18,
-                  width: 160,
-                  textAlign: "center",
-                  letterSpacing: "0.3em",
-                }}
-                placeholder="4자리 숫자"
-              />
-              {reservationError && (
-                <div style={{ color: "#e74c3c", marginBottom: 10 }}>
-                  {reservationError}
-                </div>
-              )}
-              <div style={{ display: "flex", gap: 12 }}>
-                <button
-                  onClick={closeModal}
-                  style={{
-                    padding: "0.7rem 1.5rem",
-                    borderRadius: 8,
-                    border: "none",
-                    background: "#eee",
-                    color: "#333",
-                    fontWeight: 600,
-                    fontSize: "1.05rem",
-                    cursor: "pointer",
-                  }}
-                >
-                  취소
-                </button>
-                <button
-                  onClick={handleReserveRequest}
-                  disabled={password.length !== 4 || reserving}
-                  style={{
-                    padding: "0.7rem 1.5rem",
-                    borderRadius: 8,
-                    border: "none",
-                    background:
-                      password.length === 4 && !reserving
-                        ? "#3A6351"
-                        : "#e0e0e0",
-                    color: "#fff",
-                    fontWeight: 700,
-                    fontSize: "1.05rem",
-                    cursor:
-                      password.length === 4 && !reserving
-                        ? "pointer"
-                        : "not-allowed",
-                  }}
-                >
-                  {reserving ? "예약 중..." : "예약 완료"}
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-        {/* 예약 성공 안내 모달 */}
-        {showSuccessModal && reservationResult && (
-          <div
-            style={{
-              position: "fixed",
-              left: 0,
-              top: 0,
-              width: "100vw",
-              height: "100vh",
-              background: "rgba(0,0,0,0.25)",
-              zIndex: 1000,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <div
-              style={{
-                background: "#fff",
-                borderRadius: 16,
-                padding: 32,
-                minWidth: 320,
-                boxShadow: "0 4px 24px rgba(0,0,0,0.13)",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-              }}
-            >
-              <h3
-                style={{
-                  fontWeight: 700,
-                  fontSize: "1.2rem",
-                  marginBottom: 18,
-                }}
-              >
-                예약이 완료되었습니다.
-              </h3>
-              <div
-                style={{
-                  color: "#3A6351",
-                  fontWeight: 700,
-                  fontSize: "1.13rem",
-                  marginBottom: 10,
-                }}
-              >
-                예약 번호는 [ {reservationResult.data.reservationId} ] 입니다.
-                <br />
-                <span
-                  style={{
-                    fontWeight: 500,
-                    fontSize: "1.01rem",
-                    color: "#444",
-                  }}
-                >
-                  예약 조회/변경/취소 시 필요하오니 꼭 기억해주세요.
-                </span>
-              </div>
-              <div
-                style={{
-                  color: "#3A6351",
-                  fontWeight: 600,
-                  fontSize: "1.08rem",
-                  marginBottom: 18,
-                }}
-              >
-                [예약 확인] 페이지에서 확인해주세요
-              </div>
-              <button
-                onClick={() => {
-                  setShowSuccessModal(false);
-                  resetReservation();
-                }}
-                style={{
-                  padding: "0.7rem 1.5rem",
-                  borderRadius: 8,
-                  border: "none",
-                  background: "#3A6351",
-                  color: "#fff",
-                  fontWeight: 700,
-                  fontSize: "1.05rem",
-                  cursor: "pointer",
-                }}
-              >
-                닫기
-              </button>
-            </div>
-          </div>
-        )}
+
+        <ReservationModal
+          isOpen={showModal}
+          onClose={closeModal}
+          onSubmit={handleReserveRequest}
+          reserving={reserving}
+          error={reservationError}
+          password={password}
+          onPasswordChange={setPassword}
+        />
+
+        <ReservationSuccessModal
+          isOpen={showSuccessModal}
+          reservationId={String(reservationResult?.data.reservationId || "")}
+          onClose={() => {
+            setShowSuccessModal(false);
+            resetReservation();
+          }}
+        />
       </div>
     </div>
   );
