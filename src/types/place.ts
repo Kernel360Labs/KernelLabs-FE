@@ -19,9 +19,9 @@ export interface PlaceDetail {
   address: string;
   openTime: string;
   closeTime: string;
-  unitPrice: number;
-  description: string;
-  timeSlots?: { time: string; available: boolean }[];
+  unitPrice: number | null;
+  description: string | null;
+  timeSlots?: { time: string; status: string }[];
 }
 
 export interface PlaceDetailResponse {

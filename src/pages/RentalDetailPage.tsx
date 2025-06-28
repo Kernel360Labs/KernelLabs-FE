@@ -1,5 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useState, useMemo } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { usePlaceDetail } from "../hooks/usePlaces";
 import RentalMapPlaceholder from "../components/RentalMapPlaceholder";
 import RentalCalendar from "../components/RentalCalendar";
@@ -40,6 +41,7 @@ const RentalDetailPage = () => {
     resetReservation,
   } = useReservationStore();
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const queryClient = useQueryClient();
 
   // 날짜를 YYYY-MM-DD로 변환
   const selectedDateStr = date.toISOString().slice(0, 10);
@@ -48,7 +50,7 @@ const RentalDetailPage = () => {
     selectedDateStr
   );
 
-  // 시간 슬롯 계산 (API에서 제공하는 timeSlots 우선 사용)
+  // 시간 슬롯 계산 (API에서 제공하는 timeSlots 사용)
   const timeSlots = useMemo(() => {
     if (!place) return [];
     if (place.timeSlots && place.timeSlots.length > 0) {
@@ -62,17 +64,7 @@ const RentalDetailPage = () => {
         },
       ];
     }
-    // fallback: 기존 방식
-    const slots = getHourSlots(place.openTime, place.closeTime).map((t) => ({
-      time: t,
-      available: true,
-    }));
-    return [
-      {
-        label: `${place.openTime.slice(0, 5)} ~ ${place.closeTime.slice(0, 5)}`,
-        slots,
-      },
-    ];
+    return [];
   }, [place]);
 
   if (loading) {
@@ -135,6 +127,9 @@ const RentalDetailPage = () => {
       setPassword("");
       setSelectedTime([]);
       await refetch();
+      queryClient.invalidateQueries({
+        queryKey: ["placeDetail", id, selectedDateStr],
+      });
     } catch (e: any) {
       setReservationError(
         e?.response?.data?.message || e.message || "예약에 실패했습니다."
@@ -186,10 +181,10 @@ const RentalDetailPage = () => {
         </button>
         <PlaceInfo
           name={place.name}
-          description={place.description}
+          description={place.description || ""}
           openTime={place.openTime}
           closeTime={place.closeTime}
-          unitPrice={place.unitPrice}
+          unitPrice={place.unitPrice || 0}
         />
         <RentalMapPlaceholder address={place.address} />
         <div

@@ -3,6 +3,8 @@ import { placeService } from "../services/placeService";
 import { useReservationStore } from "../stores/placeStore";
 import DeleteReservationModal from "../components/DeleteReservationModal";
 import DeleteSuccessModal from "../components/DeleteSuccessModal";
+import EditReservationModal from "../components/EditReservationModal";
+import EditSuccessModal from "../components/EditSuccessModal";
 import ReservationCheckForm from "../components/ReservationCheckForm";
 import ReservationInfoCard from "../components/ReservationInfoCard";
 
@@ -11,9 +13,14 @@ const ReservationCheckPage = () => {
   const [password, setPassword] = useState("");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showEditSuccessModal, setShowEditSuccessModal] = useState(false);
   const [deletePassword, setDeletePassword] = useState("");
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [editError, setEditError] = useState<string | null>(null);
+  const [updatedReservationData, setUpdatedReservationData] =
+    useState<any>(null);
   const {
     reserving: loading,
     reservationError: error,
@@ -69,6 +76,19 @@ const ReservationCheckPage = () => {
     }
   };
 
+  const handleEditReservation = (updateResult: any) => {
+    setShowEditModal(false);
+    setUpdatedReservationData(updateResult.data);
+    setShowEditSuccessModal(true);
+    // 예약 정보 업데이트
+    if (result) {
+      setReservationResult({
+        ...result,
+        data: updateResult.data,
+      });
+    }
+  };
+
   const openDeleteModal = () => {
     setShowDeleteModal(true);
     setDeletePassword("");
@@ -85,9 +105,19 @@ const ReservationCheckPage = () => {
     setShowSuccessModal(false);
   };
 
-  const handleEdit = () => {
-    // TODO: 예약 수정 로직 구현
-    alert("예약 수정 기능은 준비 중입니다.");
+  const openEditModal = () => {
+    setShowEditModal(true);
+    setEditError(null);
+  };
+
+  const closeEditModal = () => {
+    setShowEditModal(false);
+    setEditError(null);
+  };
+
+  const closeEditSuccessModal = () => {
+    setShowEditSuccessModal(false);
+    setUpdatedReservationData(null);
   };
 
   return (
@@ -115,7 +145,7 @@ const ReservationCheckPage = () => {
       {result && (
         <ReservationInfoCard
           reservationData={result.data}
-          onEdit={handleEdit}
+          onEdit={openEditModal}
           onDelete={openDeleteModal}
         />
       )}
@@ -133,6 +163,24 @@ const ReservationCheckPage = () => {
       <DeleteSuccessModal
         isOpen={showSuccessModal}
         onClose={closeSuccessModal}
+      />
+
+      <EditReservationModal
+        isOpen={showEditModal}
+        onClose={closeEditModal}
+        placeId={result?.data.placeId || ""}
+        reservationId={result?.data.reservationId || ""}
+        currentDate={
+          result?.data.reservationDate || new Date().toISOString().slice(0, 10)
+        }
+        onUpdate={handleEditReservation}
+        error={editError}
+      />
+
+      <EditSuccessModal
+        isOpen={showEditSuccessModal}
+        onClose={closeEditSuccessModal}
+        updatedData={updatedReservationData}
       />
     </div>
   );

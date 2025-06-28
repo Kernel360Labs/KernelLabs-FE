@@ -1,4 +1,7 @@
-type Slot = { time: string; available: boolean };
+type Slot = {
+  time: string;
+  status: string;
+};
 
 const TimeSlotSelector = ({
   slots,
@@ -11,8 +14,8 @@ const TimeSlotSelector = ({
   onSelect: (slots: string[]) => void;
   maxSelect?: number;
 }) => {
-  const handleClick = (slot: string, available: boolean) => {
-    if (!available) return;
+  const handleClick = (slot: string, status: string) => {
+    if (status === "UNAVAILABLE") return;
     const idx = selectedTime.indexOf(slot);
     let next: string[];
     if (idx > -1) {
@@ -30,6 +33,78 @@ const TimeSlotSelector = ({
     }
     onSelect(next);
   };
+
+  const getSlotStyle = (slot: Slot) => {
+    const isSelected = selectedTime.includes(slot.time);
+    const isMyReservation = slot.status === "MY_RESERVATION";
+
+    if (isSelected) {
+      return {
+        padding: "0.55rem 0.9rem",
+        borderRadius: 8,
+        border: "2.5px solid #3A6351",
+        background: "#3A6351",
+        color: "#fff",
+        fontWeight: 700,
+        fontSize: "1.01rem",
+        cursor: "pointer",
+        marginBottom: 8,
+        minWidth: 80,
+        transition: "background 0.18s, color 0.18s, border 0.18s",
+        opacity: 1,
+      };
+    }
+
+    if (slot.status === "UNAVAILABLE") {
+      return {
+        padding: "0.55rem 0.9rem",
+        borderRadius: 8,
+        border: "1.5px solid #e0e0e0",
+        background: "#f2f2f2",
+        color: "#bbb",
+        fontWeight: 700,
+        fontSize: "1.01rem",
+        cursor: "not-allowed",
+        marginBottom: 8,
+        minWidth: 80,
+        transition: "background 0.18s, color 0.18s, border 0.18s",
+        opacity: 0.55,
+      };
+    }
+
+    if (isMyReservation) {
+      return {
+        padding: "0.55rem 0.9rem",
+        borderRadius: 8,
+        border: "1.5px solid #FFA500",
+        background: "#fff",
+        color: "#FFA500",
+        fontWeight: 700,
+        fontSize: "1.01rem",
+        cursor: "pointer",
+        marginBottom: 8,
+        minWidth: 80,
+        transition: "background 0.18s, color 0.18s, border 0.18s",
+        opacity: 1,
+      };
+    }
+
+    return {
+      padding: "0.55rem 0.9rem",
+      borderRadius: 8,
+      border: "1.5px solid #e0e0e0",
+      background: "#fff",
+      color: "#222",
+      fontWeight: 700,
+      fontSize: "1.01rem",
+      cursor: "pointer",
+      marginBottom: 8,
+      minWidth: 80,
+      transition: "background 0.18s, color 0.18s, border 0.18s",
+      opacity: 1,
+    };
+  };
+
   return (
     <div
       style={{
@@ -43,34 +118,21 @@ const TimeSlotSelector = ({
       {slots.map((slot) => (
         <button
           key={slot.time}
-          onClick={() => handleClick(slot.time, slot.available)}
-          disabled={!slot.available}
-          style={{
-            padding: "0.55rem 0.9rem",
-            borderRadius: 8,
-            border: selectedTime.includes(slot.time)
-              ? "2.5px solid #3A6351"
-              : "1.5px solid #e0e0e0",
-            background: selectedTime.includes(slot.time)
-              ? "#3A6351"
-              : slot.available
-              ? "#fff"
-              : "#f2f2f2",
-            color: selectedTime.includes(slot.time)
-              ? "#fff"
-              : slot.available
-              ? "#222"
-              : "#bbb",
-            fontWeight: 700,
-            fontSize: "1.01rem",
-            cursor: slot.available ? "pointer" : "not-allowed",
-            marginBottom: 8,
-            minWidth: 80,
-            transition: "background 0.18s, color 0.18s, border 0.18s",
-            opacity: slot.available ? 1 : 0.55,
-          }}
+          onClick={() => handleClick(slot.time, slot.status)}
+          disabled={slot.status === "UNAVAILABLE"}
+          style={getSlotStyle(slot)}
+          title={
+            slot.status === "MY_RESERVATION"
+              ? "내 예약"
+              : slot.status === "UNAVAILABLE"
+              ? "다른 사람 예약"
+              : "예약 가능"
+          }
         >
           {slot.time}
+          {slot.status === "MY_RESERVATION" && (
+            <span style={{ fontSize: "0.8em", marginLeft: 4 }}>✓</span>
+          )}
         </button>
       ))}
     </div>
